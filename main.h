@@ -15,6 +15,6 @@ typedef enum
     gereed,
     start,
     nood
-}system_status_t;
+}systeem_status_t;
 
 #endif /* MAIN_H_PEE50 */
