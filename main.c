@@ -1,35 +1,38 @@
-/* c standard includes */
-# include <stdio.h>
+#include <stdint.h>
+#include <stddef.h>
 
-/* local includes */
-#include "main.h"
+/* Driver Header files */
+#include <ti/drivers/GPIO.h>
 
-/* function declarations */
+/* Example/Board Header files */
+#include "Board.h"
 
-
-/******************** main.c ********************/
-int main(void)
+/*
+ *  ============= mainThread ===============
+ *
+ *  Dit is de 'main' functie van het project
+ *  Debugger is ingesteld om hier te te pauzeren
+ *  i.p.v. bij de originele main-functie
+ *
+ *  Tips:
+ *  1. Controleer de 'Linked Resources'
+ *     onder 'project properties' om
+ *     compilerproblemen te voorkomen
+ *
+ *  2. Gebruik 'Board.html' uit het project om
+ *     de pinnamen te zien van de driver
+ *
+ */
+void *mainThread(void *arg0)
 {
-    systeem_status_t status = reset;
+    /*
+     *  code komt hier
+     *
+     */
+    GPIO_init();
 
     while(1)
     {
-        while(status == reset){
-
-        }
-        while(status == wacht){
-
-        }
-        while(status == gereed){
-
-        }
-        while(status == start){
-
-        }
-        while(status == nood){
-
-        }
+        GPIO_toggle(Board_GPIO_LED0);
     }
-
-	return EXIT_SUCCES;
 }
