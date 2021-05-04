@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2019, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,36 +25,77 @@
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- *  ======== main_nortos.c ========
+ *  ======== pwmled2.c ========
  */
-#include <stdint.h>
+/* For usleep() */
+#include <unistd.h>
 #include <stddef.h>
 
-#include <NoRTOS.h>
+/* Driver Header files */
+#include <ti/drivers/PWM.h>
 
-#include <ti/drivers/Board.h>
-
-extern void *mainThread(void *arg0);
+/* Driver configuration */
+#include "ti_drivers_config.h"
 
 /*
- *  ======== main ========
+ *  ======== mainThread ========
+ *  Task periodically increments the PWM duty for the on board LED.
  */
-int main(void)
+void *mainThread(void *arg0)
 {
-    Board_init();
+    /* Period and duty in microseconds */
+    uint16_t   pwmPeriod = 3000;
+    uint16_t   duty = 0;
+    uint16_t   dutyInc = 100;
 
-    /* Start NoRTOS */
-    NoRTOS_start();
+    /* Sleep time in microseconds */
+    uint32_t   time = 50000;
+    PWM_Handle pwm1 = NULL;
+    PWM_Handle pwm2 = NULL;
+    PWM_Params params;
 
-    /* Call mainThread function */
-    mainThread(NULL);
+    /* Call driver init functions. */
+    PWM_init();
 
-    while (1) {}
+    PWM_Params_init(&params);
+    params.dutyUnits = PWM_DUTY_US;
+    params.dutyValue = 0;
+    params.periodUnits = PWM_PERIOD_US;
+    params.periodValue = pwmPeriod;
+    pwm1 = PWM_open(CONFIG_PWM_0, &params);
+    if (pwm1 == NULL) {
+        /* CONFIG_PWM_0 did not open */
+        while (1);
+    }
+
+    PWM_start(pwm1);
+
+    pwm2 = PWM_open(CONFIG_PWM_1, &params);
+    if (pwm2 == NULL) {
+        /* CONFIG_PWM_0 did not open */
+        while (1);
+    }
+
+    PWM_start(pwm2);
+
+    /* Loop forever incrementing the PWM duty */
+    while (1) {
+        PWM_setDuty(pwm1, duty);
+
+        PWM_setDuty(pwm2, duty);
+
+        duty = (duty + dutyInc);
+
+        if (duty == pwmPeriod || (!duty)) {
+            dutyInc = - dutyInc;
+        }
+
+        usleep(time);
+    }
 }
