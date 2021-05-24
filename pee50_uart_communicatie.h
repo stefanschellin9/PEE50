@@ -8,13 +8,13 @@
 #ifndef PEE50_UART_COMMUNICATIE_H_
 #define PEE50_UART_COMMUNICATIE_H_
 
-#include "main.h"
+#include <global_use.h>
 // in de main.h staat een structure voor alle verzend data, als je iets mist
 // kan je dat in de structure toevoegen.
 
 /************************** uart_get_next_velocity ***************************/
 /* verzend alle data uit de senddata structure */
-void uart_send_data(struct senddata data);
+void uart_send_data(send_data_t data);
 
 /************************** uart_get_next_velocity ***************************/
 /* sla nieuwe velocity in de lijst op in de velocity pointer */

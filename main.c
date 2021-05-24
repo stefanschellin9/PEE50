@@ -30,26 +30,93 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- *  ======== uartecho.c ========
- */
+/*  */
+#include <global_use.h>
+#include <global_use.h>
 #include <stdint.h>
 #include <stddef.h>
 
 /* Driver configuration */
+#include <ti/drivers/Board.h>
 #include "ti_drivers_config.h"
 
+/* nortos framework configuration file */
 #include <NoRTOS.h>
 
-#include <ti/drivers/Board.h>
+/* personal header files */
+#include "global_use.h"
+#include "pee50_systick.h"
+#include "pee50_scheduler.h"
 
-/*
- *  ======== mainThread ========
- */
+/* not yet functional header files*/
+#include "pee50_adc.h"                                          /* todo */
+#include "pee50_uart_communicatie.h"                            /* todo */
+#include "pee50_regelaar.h"                                     /* todo */
+
+send_data_t data;
+
+void system_status_change(void *temp1, void *temp2)
+{
+    status = reset;
+}
+
+void func(void *temp1, void *temp2)
+{
+    /* dummy placeholder function for function pointer testing */
+}
+
+/************************************ main ***********************************/
+/* the main function of the electrolyzer MCU */
 int main(void)
 {
+    /* cc3220 and nortos initialization */
     Board_init();
     NoRTOS_start();
 
+    /* initialize once */
+    systick_init();
+//    gpio_init();                                                /* todo */
+//    uart_init();                                                /* todo */
+//    i2c_init();                                                 /* todo */
+
+    while(1) {
+        while(status == reset) {
+
+            if(data.current == 0) {
+                status = wacht;
+            }
+        }
+
+        while(status == wacht) {
+            // uart_send wacht signaal
+
+        }
+        while(status == gereed) {
+            // uart_send gereed signaal
+            // wacht voor uart start signaal
+        }
+
+        /* attach tasks to scheduler */
+        scheduler_task_attach(&func, 48, 0);
+        scheduler_task_attach(&func, 48, 16);
+        scheduler_task_attach(&func, 48, 32);
+
+        systick_start();
+        while(status == start) {
+            scheduler_tasks_execute();
+        }
+        systick_stop();
+        scheduler_task_detach_all();
+
+        scheduler_task_attach(&system_status_change, 10, 20);       // attach system_status_change change after 20 ms
+        scheduler_task_attach(&func, 1, 0);                         // attach adc_meet_stroom check every ms
+
+        systick_start();
+        while(status == nood) {
+            scheduler_tasks_execute();
+        }
+        systick_stop();
+        scheduler_task_detach_all();
+    }
     return 0;
 }
