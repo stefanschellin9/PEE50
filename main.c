@@ -55,9 +55,9 @@
 
 send_data_t data;
 
-void system_status_change(void *temp1, void *temp2)
+void system_status_change(void *stat_ptr, void *temp1)
 {
-    status = reset;
+    status = *(sys_stat_t *)stat_ptr;
 }
 
 void func(void *temp1, void *temp2)
@@ -108,8 +108,12 @@ int main(void)
         systick_stop();
         scheduler_task_detach_all();
 
-        scheduler_task_attach(&system_status_change, 10, 20);       // attach system_status_change change after 20 ms
-        scheduler_task_attach(&func, 1, 0);                         // attach adc_meet_stroom check every ms
+        sys_stat_t temp1 = reset;
+
+        // setpoint set to 0
+        scheduler_task_attach(&func, 1, 0);                                 // attach adc_meet_stroom check every ms
+        scheduler_task_attach(&system_status_change, 10, 25, &temp1);       // attach system_status_change change status after 25 ms
+        scheduler_task_attach(&func, 10, 20);                               // attach gpio_power_rail_switch change after 20 ms
 
         systick_start();
         while(status == nood) {

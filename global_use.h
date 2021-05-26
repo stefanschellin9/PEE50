@@ -22,10 +22,14 @@ typedef enum sys_status {
 	gereed,
 	start,
 	nood
-} sys_status_t;
+} sys_stat_t;
 
 /* global variables */
 extern send_data_t data;
-extern sys_status_t status = reset;
+extern sys_stat_t status = reset;
+
+
+void system_status_change(void *stat_ptr, void *temp1);
+
 
 #endif /* MAIN_H_PEE50 */
