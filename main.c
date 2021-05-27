@@ -35,6 +35,7 @@
  */
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 /* Driver configuration */
 #include "ti_drivers_config.h"
@@ -42,6 +43,8 @@
 #include <NoRTOS.h>
 
 #include <ti/drivers/Board.h>
+
+#include "pee50_tmp117.h"
 
 /*
  *  ======== mainThread ========
@@ -51,5 +54,16 @@ int main(void)
     Board_init();
     NoRTOS_start();
 
+    tmp117_init();
+//    tmp117_high_limit_set(25);
+//    tmp117_low_limit_set(10);
+
+    tmp117_high_limit_get();
+    tmp117_low_limit_get();
+
+    while(1) {
+        //printf("%f\n", tmp117_read_temp_c());
+    }
+    tmp117_soft_reset();
     return 0;
 }
