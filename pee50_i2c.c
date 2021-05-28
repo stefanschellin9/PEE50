@@ -35,7 +35,7 @@ int8_t cc3220_i2c_close()
     return 0;
 }
 
-int8_t cc3220_i2c_write_8bit(uint8_t devAddr, uint8_t regAddr, uint8_t write_data)
+int8_t cc3220_i2c_write_8bit(uint8_t devAddr, uint8_t regAddr, int8_t write_data)
 {
     uint8_t write_buffer[] = {regAddr, write_data};
 
@@ -53,7 +53,7 @@ int8_t cc3220_i2c_write_8bit(uint8_t devAddr, uint8_t regAddr, uint8_t write_dat
     return 0;
 }
 
-int8_t cc3220_i2c_read_8bit(uint8_t devAddr, uint8_t regAddr, uint8_t *read_data)
+int8_t cc3220_i2c_read_8bit(uint8_t devAddr, uint8_t regAddr, int8_t *read_data)
 {
     uint8_t write_buffer[] = {regAddr};
     uint8_t read_buffer[1];
@@ -72,7 +72,7 @@ int8_t cc3220_i2c_read_8bit(uint8_t devAddr, uint8_t regAddr, uint8_t *read_data
     return 0;
 }
 
-int8_t cc3220_i2c_write_16bit(uint8_t devAddr, uint8_t regAddr, uint16_t write_data)
+int8_t cc3220_i2c_write_16bit(uint8_t devAddr, uint8_t regAddr, int16_t write_data)
 {
     uint8_t data_low = ((uint8_t)write_data >> 0) & 0xFF;
     uint8_t data_high = ((uint8_t)write_data >> 8) & 0xFF;
@@ -93,7 +93,7 @@ int8_t cc3220_i2c_write_16bit(uint8_t devAddr, uint8_t regAddr, uint16_t write_d
     return 0;
 }
 
-int8_t cc3220_i2c_read_16bit(uint8_t devAddr, uint8_t regAddr, uint16_t *read_data)
+int8_t cc3220_i2c_read_16bit(uint8_t devAddr, uint8_t regAddr, int16_t *read_data)
 {
     uint8_t write_buffer[] = {regAddr};
     uint8_t read_buffer[2];

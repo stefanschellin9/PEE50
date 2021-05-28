@@ -54,16 +54,19 @@ int main(void)
     Board_init();
     NoRTOS_start();
 
-    tmp117_init();
-//    tmp117_high_limit_set(25);
-//    tmp117_low_limit_set(10);
+    //tmp117_init();
+    printf("\n");
+//    tmp117_high_limit_set(192);
+//    tmp117_low_limit_set(-256);
 
     tmp117_high_limit_get();
     tmp117_low_limit_get();
 
-    while(1) {
-        //printf("%f\n", tmp117_read_temp_c());
-    }
+//    while(1) {
+////        if(tmp117_data_ready_check() == 0) {
+////            printf("%f\n", tmp117_read_temp_c());
+////        }
+//    }
     tmp117_soft_reset();
     return 0;
 }

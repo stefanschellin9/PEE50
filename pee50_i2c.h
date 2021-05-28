@@ -25,18 +25,18 @@ int8_t cc3220_i2c_close();
 
 /****************************** cc3220_i2c_write *****************************/
 /* write to an 8 bit register of an i2c device */
-int8_t cc3220_i2c_write_8bit(uint8_t devAddr, uint8_t regAddr, uint8_t write_data);
+int8_t cc3220_i2c_write_8bit(uint8_t devAddr, uint8_t regAddr, int8_t write_data);
 
 /****************************** cc3220_i2c_read ******************************/
 /* read from an 8 bit register of an i2c device */
-int8_t cc3220_i2c_read_8bit(uint8_t devAddr, uint8_t regAddr, uint8_t *read_data);
+int8_t cc3220_i2c_read_8bit(uint8_t devAddr, uint8_t regAddr, int8_t *read_data);
 
 /****************************** cc3220_i2c_write *****************************/
 /* write to an 16 bit register of an i2c device */
-int8_t cc3220_i2c_write_16bit(uint8_t devAddr, uint8_t regAddr, uint16_t write_data);
+int8_t cc3220_i2c_write_16bit(uint8_t devAddr, uint8_t regAddr, int16_t write_data);
 
 /****************************** cc3220_i2c_read ******************************/
 /* read from an 16 bit register of an i2c device */
-int8_t cc3220_i2c_read_16bit(uint8_t devAddr, uint8_t regAddr, uint16_t *read_data);
+int8_t cc3220_i2c_read_16bit(uint8_t devAddr, uint8_t regAddr, int16_t *read_data);
 
 #endif /* I2C_H_PEE50 */
