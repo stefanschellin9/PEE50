@@ -8,10 +8,12 @@
 /**
  * Import the modules used in this configuration.
  */
-const GPIO  = scripting.addModule("/ti/drivers/GPIO", {}, false);
-const GPIO1 = GPIO.addInstance();
-const GPIO2 = GPIO.addInstance();
-const GPIO3 = GPIO.addInstance();
+const ADC   = scripting.addModule("/ti/drivers/ADC", {}, false);
+const ADC1  = ADC.addInstance();
+const ADC2  = ADC.addInstance();
+const ADC3  = ADC.addInstance();
+const PWM   = scripting.addModule("/ti/drivers/PWM", {}, false);
+const PWM1  = PWM.addInstance();
 const RTOS  = scripting.addModule("/ti/drivers/RTOS");
 const UART  = scripting.addModule("/ti/drivers/UART");
 const UART1 = UART.addInstance();
@@ -19,14 +21,18 @@ const UART1 = UART.addInstance();
 /**
  * Write custom configuration values to the imported modules.
  */
-GPIO1.$name     = "CONFIG_GPIO_0";
-GPIO1.$hardware = system.deviceData.board.components.LED_RED;
+ADC1.$name     = "CONFIG_ADC_0";
+ADC1.$hardware = system.deviceData.board.components.OPA4342.subComponents.AIN4;
 
-GPIO2.$name     = "CONFIG_GPIO_1";
-GPIO2.$hardware = system.deviceData.board.components.LED_YELLOW;
+ADC2.$name     = "CONFIG_ADC_1";
+ADC2.$hardware = system.deviceData.board.components.OPA4342.subComponents.AIN3;
 
-GPIO3.$name     = "CONFIG_GPIO_2";
-GPIO3.$hardware = system.deviceData.board.components.LED_GREEN;
+ADC3.$name     = "CONFIG_ADC_2";
+ADC3.$hardware = system.deviceData.board.components.OPA4342.subComponents.AIN2;
+
+PWM1.$name                = "CONFIG_PWM_0";
+PWM1.$hardware            = system.deviceData.board.components.LED_YELLOW;
+PWM1.timer.pwmPin.$assign = "boosterpack.9";
 
 const Power          = scripting.addModule("/ti/drivers/Power", {}, false);
 Power.parkPins.$name = "ti_drivers_power_PowerCC32XXPins0";
@@ -41,9 +47,13 @@ UART1.$hardware = system.deviceData.board.components.XDS110UART;
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-GPIO1.gpioPin.$suggestSolution    = "boosterpack.29";
-GPIO2.gpioPin.$suggestSolution    = "boosterpack.9";
-GPIO3.gpioPin.$suggestSolution    = "boosterpack.10";
+ADC1.adc.$suggestSolution         = "ADC0";
+ADC1.adc.adcPin.$suggestSolution  = "boosterpack.24";
+ADC2.adc.$suggestSolution         = "ADC0";
+ADC2.adc.adcPin.$suggestSolution  = "boosterpack.26";
+ADC3.adc.$suggestSolution         = "ADC0";
+ADC3.adc.adcPin.$suggestSolution  = "boosterpack.2";
+PWM1.timer.$suggestSolution       = "Timer3";
 UART1.uart.$suggestSolution       = "UART0";
 UART1.uart.txPin.$suggestSolution = "55";
 UART1.uart.rxPin.$suggestSolution = "57";

@@ -35,6 +35,7 @@
  */
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 /* Driver configuration */
 #include "ti_drivers_config.h"
@@ -43,6 +44,9 @@
 
 #include <ti/drivers/Board.h>
 
+//#include "pee50_regelaar.h"
+#include "pee50_ADC.h"
+
 /*
  *  ======== mainThread ========
  */
@@ -50,6 +54,22 @@ int main(void)
 {
     Board_init();
     NoRTOS_start();
+
+
+//    regelaar_Init();
+//    regelaar_open();
+//    regelaar(1400, 20, 32);
+//    regelaar_close();
+    float adc;
+    adc_init();
+    adc_open();
+    while(1) {
+
+        adc_meet_stroom(&adc);
+        printf("%f \n",adc);
+
+    }
+    adc_close();
 
     return 0;
 }
