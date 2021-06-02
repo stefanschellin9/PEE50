@@ -2,7 +2,7 @@
  * pee50_adc.h
  *
  *  Created on: 17 mei 2021
- *      Author: stefa
+ *      Author: cihat sonmez
  */
 
 #ifndef PEE50_ADC_H_

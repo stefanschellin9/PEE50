@@ -2,7 +2,7 @@
  * pee50_adc.c
  *
  *  Created on: 31 mei 2021
- *      Author: stefa
+ *      Author: cihat sonmez
  */
 
 
