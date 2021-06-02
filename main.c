@@ -65,11 +65,9 @@ int main(void)
 //    regelaar_close();
 //    adc_close();
 
-
 //    float adc;
 //    adc_init();
 //    adc_open();
-
 //    while(1) {
 //
 //       adc_meet_stroom(&adc);
