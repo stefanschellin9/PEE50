@@ -17,6 +17,8 @@
 
 #include "ti_drivers_config.h"
 #include "pee50_regelaar.h"
+#include "pee50_adc.h"
+
 
 #define ti  0.0002      // 14.7;
 #define td  0.00033     // 3.6;
@@ -31,7 +33,10 @@ PWM_Handle pwm;
 PWM_Params pwmParams;
 float dutyValue;
 
-void regelaar_Init(void)
+uint32_t dutyCycleMin = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 20) / 100);
+uint32_t dutyCycleMax = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 1 ) / 100);
+
+void regelaar_init()
 {
     ParamsPID.ki = kc*(ts/ti * 2);
     ParamsPID.kd = kc*(td/ts);
@@ -80,8 +85,13 @@ void regelaar_close(void)
     PWM_stop(pwm);
 }
 
-void regelaar(int16_t setpoint, float current, float voltage)
+void regelaar(void *sp)
 {
+    float setpoint = *(float *)sp;
+    float voltage, current;
+    adc_meet_stroom(&current);
+    adc_meet_spanning_na(&voltage);
+
     float current_Setpoint = setpoint/voltage;
     PID.Output_Measurement = current;
     PID.Error = current_Setpoint - PID.Output_Measurement;

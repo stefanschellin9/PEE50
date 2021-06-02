@@ -11,6 +11,6 @@
 void systick_init(void);
 void systick_start(void);
 void systick_stop(void);
-void systick_function_timer(void (*func_ptr)());
+void systick_function_timer(void (*func_ptr)(void *), void *temp);
 
 #endif /* SYSTICK_H_PEE50 */

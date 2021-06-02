@@ -5,12 +5,13 @@
  *      Author: Jarin van veenendaal
  */
 
-#ifndef REGELAAR_H_
-#define REGELAAR_H_
+#ifndef REGELAAR_H_PEE50
+#define REGELAAR_H_PEE50
+
 #include <stdint.h>
 #include <ti/drivers/PWM.h>
 
-typedef struct{
+typedef struct pid_con{
     double ki;
     float kd;
     float kp;
@@ -28,16 +29,11 @@ typedef struct{
     float proportional;
     float differential;
     float Output;
-
-
 }PIDController;
 
-uint32_t dutyCycleMin = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 20) / 100);
-uint32_t dutyCycleMax = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 1 ) / 100);
+void regelaar_init();
+void regelaar(void *sp);
+void regelaar_open();
+void regelaar_close();
 
-void regelaar_Init(void);
-void regelaar(int16_t setpoint, float current, float voltage);
-void regelaar_open(void);
-void regelaar_close(void);
-
-#endif /* REGELAAR_H_ */
+#endif /* REGELAAR_H_PEE50 */

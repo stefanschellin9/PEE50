@@ -24,14 +24,14 @@
 /* Header file */
 
 /* ADC conversion result variables */
-uint16_t adcValue0;
-double adcValue0MicroVolt;
-uint16_t adcValue1;
-double adcValue1MicroVolt;
-uint16_t adcValue2;
-double adcValue2MicroVolt;
+//uint16_t adcValue0;
+//double adcValue0MicroVolt;
+//uint16_t adcValue1;
+//double adcValue1MicroVolt;
+//uint16_t adcValue2;
+//double adcValue2MicroVolt;
 
-static Display_Handle display;
+
 
 /* Globale variabele */
 ADC_Handle   adc0;
@@ -73,46 +73,41 @@ void adc_close()
     ADC_close(adc2);
 }
 
-void adc_meet_stroom (float *stroom) {
+void adc_meet_stroom (void *stroom) {
     int_fast16_t res0;
 
-    res0 = ADC_convert(adc0, &adcValue0);
+    uint16_t adcValue;
+
+    res0 = ADC_convert(adc0, &adcValue);
 
     if (res0 == ADC_STATUS_SUCCESS) {
 
-        adcValue0MicroVolt = ADC_convertRawToMicroVolts(adc0, adcValue0);
-        adcValue0MicroVolt = adcValue0MicroVolt/1000000;
-        *stroom = adcValue0MicroVolt;
-
+        *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, adcValue)*0.000001);
     }
 }
 
-void adc_meet_spanning_voor (float *spanning_voor) {
+void adc_meet_spanning_voor (void *spanning_voor) {
     int_fast16_t res1;
+    uint16_t adcValue;
 
-    res1 = ADC_convert(adc1, &adcValue1);
+    res1 = ADC_convert(adc1, &adcValue);
 
     if (res1 == ADC_STATUS_SUCCESS) {
 
-        adcValue1MicroVolt = ADC_convertRawToMicroVolts(adc1, adcValue1);
-        adcValue1MicroVolt = adcValue1MicroVolt/1000000;
-        *spanning_voor = adcValue1MicroVolt;
-
+        *(float *)spanning_voor = (ADC_convertRawToMicroVolts(adc1, adcValue)*0.000001);
     }
 
 }
 
-void adc_meet_spanning_na (float *spanning_na) {
+void adc_meet_spanning_na (void *spanning_na) {
     int_fast16_t res2;
+    uint16_t adcValue;
 
-    res2 = ADC_convert(adc2, &adcValue2);
+    res2 = ADC_convert(adc2, &adcValue);
 
     if (res2 == ADC_STATUS_SUCCESS) {
 
-        adcValue2MicroVolt = ADC_convertRawToMicroVolts(adc2, adcValue2);
-        adcValue2MicroVolt = adcValue2MicroVolt/1000000;
-        *spanning_na = adcValue2MicroVolt;
-
+        *(float *)spanning_na = ADC_convertRawToMicroVolts(adc2, adcValue)*0.000001;
     }
 
 }

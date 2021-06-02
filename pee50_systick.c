@@ -30,11 +30,11 @@ void systick_stop(void)
     SysTickIntDisable();
 }
 
-void systick_function_timer(void (*func_ptr)())
+void systick_function_timer(void (*func_ptr)(void *), void *temp)
 {
     int start = SysTickValueGet();
 
-    func_ptr();
+    func_ptr(temp);
 
     int stop = SysTickValueGet();
 
