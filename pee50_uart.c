@@ -57,14 +57,22 @@ void uart_isr(UART_Handle handle, void *buf, size_t count)
         }
 
         if(houder >= MAX_BUFF_SIZE) {
-            sys_stat_t temp = nood;
+            sys_stat_t temp = gereed;
             system_status_change(&temp, NULL);
-            uart_write_message("data is opgeslagen [druk op elke toets voor een reset]\n");
+            uart_write_message("data is opgeslagen\n");
             houder = 0;
         }
+    } else if(status == gereed) {
+        if(*(char *)buf == 's') {
+            status = start;
+            system_status_change(&status, NULL);
+            uart_write_message("het systeem wordt gestart [druk op elke toets voor een reset]");
+        } else {
+            uart_write_message("om te starten druk op s\n");
+        }
     } else {
-        sys_stat_t temp2 = reset;
-        system_status_change(&temp2, NULL);
+        status = nood;
+        system_status_change(&status, NULL);
         uart_write_message("\e[1;1H\e[2J");
     }
 }
@@ -83,7 +91,8 @@ void uart_open()
 {
     uart_handle = UART_open(CONFIG_UART_0, &uart_params);
     if(uart_handle == NULL) {
-        printf("failed\n");
+        uart_write_message("uart_open failed\n");
+        while(1);
     }
 }
 

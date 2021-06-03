@@ -50,7 +50,7 @@ int8_t tmp117_begin()
     return 0;
 }
 
-float tmp117_read_temp_c()
+void tmp117_read_temp_c(void *celsius)
 {
     int16_t data;
     float finalTempC;
@@ -61,9 +61,7 @@ float tmp117_read_temp_c()
                           (uint8_t)TMP117_TEMP_RESULT, &data);
     cc3220_i2c_close();
 
-    finalTempC = (data*TMP117_RESOLUTION);
-
-    return finalTempC;
+    *(float *)celsius = (data*TMP117_RESOLUTION);
 }
 
 int8_t tmp117_conv_mode_set(int8_t conv_bit)

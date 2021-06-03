@@ -12,6 +12,9 @@ const ADC   = scripting.addModule("/ti/drivers/ADC", {}, false);
 const ADC1  = ADC.addInstance();
 const ADC2  = ADC.addInstance();
 const ADC3  = ADC.addInstance();
+const GPIO  = scripting.addModule("/ti/drivers/GPIO", {}, false);
+const GPIO1 = GPIO.addInstance();
+const GPIO2 = GPIO.addInstance();
 const I2C   = scripting.addModule("/ti/drivers/I2C", {}, false);
 const I2C1  = I2C.addInstance();
 const PWM   = scripting.addModule("/ti/drivers/PWM", {}, false);
@@ -31,6 +34,13 @@ ADC2.$hardware = system.deviceData.board.components.OPA4342.subComponents.AIN3;
 
 ADC3.$name     = "CONFIG_ADC_2";
 ADC3.$hardware = system.deviceData.board.components.OPA4342.subComponents.AIN2;
+
+GPIO1.$name           = "CONFIG_GPIO_0";
+GPIO1.mode            = "Output";
+GPIO1.gpioPin.$assign = "boosterpack.28";
+
+GPIO2.$name           = "CONFIG_GPIO_1";
+GPIO2.gpioPin.$assign = "boosterpack.8";
 
 I2C1.$name              = "CONFIG_I2C_0";
 I2C1.i2c.sdaPin.$assign = "boosterpack.14";

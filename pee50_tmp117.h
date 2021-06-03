@@ -34,7 +34,7 @@ void binary_bit_write(int16_t *data, uint16_t bit_num, uint8_t state);
 
 int8_t tmp117_begin();
 
-float tmp117_read_temp_c();
+void tmp117_read_temp_c(void *celsius);
 
 int8_t tmp117_conv_mode_set(int8_t conv_bit);
 
