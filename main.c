@@ -49,6 +49,7 @@
 #include "pee50_regelaar.h"
 #include "pee50_adc.h"
 #include "pee50_systick.h"
+#include "pee50_tmp117.h"
 
 sys_stat_t sys_status = reset;
 
