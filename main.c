@@ -35,6 +35,7 @@
  */
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 /* Driver configuration */
 #include "ti_drivers_config.h"
@@ -43,6 +44,21 @@
 
 #include <ti/drivers/Board.h>
 
+#include "pee50_uart.h"
+#include "main.h"
+
+sys_stat_t sys_status = reset;
+
+void system_status_change(void *stat_ptr, void *temp1)
+{
+    sys_status = *(sys_stat_t *)stat_ptr;
+}
+
+void system_status_get(void *stat_ptr, void *temp1)
+{
+    *(sys_stat_t *)stat_ptr = sys_status;
+}
+
 /*
  *  ======== mainThread ========
  */
@@ -50,6 +66,20 @@ int main(void)
 {
     Board_init();
     NoRTOS_start();
+
+//    uart_init_callback();
+//    uart_open();
+//    while(1) {
+//        uart_write_message("voer uw 8 windsnelheden in:\n");
+//        while(sys_status == reset) {
+//            check_uart();
+//        }
+//
+//        while(sys_status == nood) {
+//            check_uart();
+//        }
+//    }
+//    uart_close();
 
     return 0;
 }
