@@ -44,21 +44,6 @@
 
 #include <ti/drivers/Board.h>
 
-#include "pee50_uart.h"
-#include "main.h"
-
-sys_stat_t sys_status = reset;
-
-void system_status_change(void *stat_ptr, void *temp1)
-{
-    sys_status = *(sys_stat_t *)stat_ptr;
-}
-
-void system_status_get(void *stat_ptr, void *temp1)
-{
-    *(sys_stat_t *)stat_ptr = sys_status;
-}
-
 /*
  *  ======== mainThread ========
  */
@@ -66,28 +51,6 @@ int main(void)
 {
     Board_init();
     NoRTOS_start();
-
-//    uart_init_callback();
-//    uart_open();
-//    while(1) {
-//        uart_write_message("voer uw 8 windsnelheden in:\n");
-//        while(sys_status == reset) {
-//            check_uart();
-//        }
-//        int i;
-//        for(i = 0; i < 8; i++) {
-//            int test;
-//            uart_get_next_velocity(&test);
-//            printf("test = %d\n", test);
-//        }
-//        send_data_t data_store = {1.1, 2.2, 3.3};
-//        uart_send_data(&data_store);
-//
-//        while(sys_status == nood) {
-//            check_uart();
-//        }
-//    }
-//    uart_close();
 
     return 0;
 }
