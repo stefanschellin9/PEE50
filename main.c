@@ -44,6 +44,24 @@
 
 #include <ti/drivers/Board.h>
 
+#include "pee50_uart.h"
+#include "main.h"
+#include "pee50_regelaar.h"
+#include "pee50_adc.h"
+#include "pee50_systick.h"
+
+sys_stat_t sys_status = reset;
+
+void system_status_change(void *stat_ptr, void *temp1)
+{
+    sys_status = *(sys_stat_t *)stat_ptr;
+}
+
+void system_status_get(void *stat_ptr, void *temp1)
+{
+    *(sys_stat_t *)stat_ptr = sys_status;
+}
+
 /*
  *  ======== mainThread ========
  */
