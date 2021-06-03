@@ -110,6 +110,6 @@ int8_t cc3220_i2c_read_16bit(uint8_t devAddr, uint8_t regAddr, int16_t *read_dat
         return -1;
     }
 
-    *read_data = (read_buffer[0] << 8) |= read_buffer[1];
+    *read_data = ((read_buffer[0] << 8) | read_buffer[1]);
     return 0;
 }
