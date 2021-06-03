@@ -17,7 +17,7 @@ const I2C1  = I2C.addInstance();
 const PWM   = scripting.addModule("/ti/drivers/PWM", {}, false);
 const PWM1  = PWM.addInstance();
 const RTOS  = scripting.addModule("/ti/drivers/RTOS");
-const UART  = scripting.addModule("/ti/drivers/UART");
+const UART  = scripting.addModule("/ti/drivers/UART", {}, false);
 const UART1 = UART.addInstance();
 
 /**
@@ -36,9 +36,8 @@ I2C1.$name              = "CONFIG_I2C_0";
 I2C1.i2c.sdaPin.$assign = "boosterpack.14";
 I2C1.i2c.sclPin.$assign = "boosterpack.7";
 
-PWM1.$name                = "CONFIG_PWM_0";
-PWM1.$hardware            = system.deviceData.board.components.LED_YELLOW;
-PWM1.timer.pwmPin.$assign = "boosterpack.9";
+PWM1.$name     = "CONFIG_PWM_0";
+PWM1.$hardware = system.deviceData.board.components.LED_YELLOW;
 
 const Power          = scripting.addModule("/ti/drivers/Power", {}, false);
 Power.parkPins.$name = "ti_drivers_power_PowerCC32XXPins0";
@@ -53,14 +52,15 @@ UART1.$hardware = system.deviceData.board.components.XDS110UART;
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-ADC1.adc.$suggestSolution         = "ADC0";
-ADC1.adc.adcPin.$suggestSolution  = "boosterpack.24";
-ADC2.adc.$suggestSolution         = "ADC0";
-ADC2.adc.adcPin.$suggestSolution  = "boosterpack.26";
-ADC3.adc.$suggestSolution         = "ADC0";
-ADC3.adc.adcPin.$suggestSolution  = "boosterpack.2";
-I2C1.i2c.$suggestSolution         = "I2C0";
-PWM1.timer.$suggestSolution       = "Timer3";
-UART1.uart.$suggestSolution       = "UART0";
-UART1.uart.txPin.$suggestSolution = "55";
-UART1.uart.rxPin.$suggestSolution = "57";
+ADC1.adc.$suggestSolution          = "ADC0";
+ADC1.adc.adcPin.$suggestSolution   = "boosterpack.24";
+ADC2.adc.$suggestSolution          = "ADC0";
+ADC2.adc.adcPin.$suggestSolution   = "boosterpack.26";
+ADC3.adc.$suggestSolution          = "ADC0";
+ADC3.adc.adcPin.$suggestSolution   = "boosterpack.2";
+I2C1.i2c.$suggestSolution          = "I2C0";
+PWM1.timer.$suggestSolution        = "Timer3";
+PWM1.timer.pwmPin.$suggestSolution = "boosterpack.9";
+UART1.uart.$suggestSolution        = "UART0";
+UART1.uart.txPin.$suggestSolution  = "55";
+UART1.uart.rxPin.$suggestSolution  = "57";
