@@ -44,9 +44,6 @@
 
 #include <ti/drivers/Board.h>
 
-#include "pee50_regelaar.h"
-#include "pee50_adc.h"
-#include "pee50_systick.h"
 /*
  *  ======== mainThread ========
  */
@@ -54,27 +51,6 @@ int main(void)
 {
     Board_init();
     NoRTOS_start();
-
-//    float sp = 1400;
-//    adc_init();
-//    adc_open();
-
-//    regelaar_init();
-//    regelaar_open();
-//    regelaar(&sp);
-//    regelaar_close();
-//    adc_close();
-
-//    float adc;
-//    adc_init();
-//    adc_open();
-//    while(1) {
-//
-//       adc_meet_stroom(&adc);
-//       printf("%f \n",adc);
-//
-//    }
-//    adc_close();
 
     return 0;
 }
