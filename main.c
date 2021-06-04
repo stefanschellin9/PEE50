@@ -104,9 +104,9 @@ void fan_control(void *temp1, void *temp2)
     float celsius;
     tmp117_read_temp_c(&celsius);
     if(celsius > TEMP_FAN_ON) {
-        // gpio high (pin 53 gpio 30)
+        gpio_fan_on();
     } else {
-        // gpio low (pin 53 gpio 30)
+        gpio_fan_off();
     }
 }
 
@@ -141,7 +141,10 @@ int main(void)
         uart_write_message("systeem wordt gereset");
         while(sys_status == reset) {
 
-            if(0 == 0) {
+            // setpoint nul maken
+            float stroom;
+            adc_meet_stroom(&stroom);
+            if(stroom < 1) {
                 sys_status = wacht;
                 uart_write_message("\e[1;1H\e[2J");
             }
@@ -157,9 +160,11 @@ int main(void)
         }
 
         /* attach tasks to scheduler */
-        scheduler_task_attach(&check_overwaarde, 48, 0);                    // check voor overwaardes
-        scheduler_task_attach(&func, 48, 16);
+        scheduler_task_attach(&check_overwaarde, 1000000, 1000);                    // check voor overwaardes elke seconde
+        scheduler_task_attach(&regelaar, 200, 10000);                               // regelaar functie om de 200 us na 10 ms delay
         scheduler_task_attach(&func, 48, 32);
+
+        regelaar_open();                                                            // regelaar start pas nu
 
         systick_start();
         while(sys_status == start) {
@@ -171,9 +176,9 @@ int main(void)
         sys_stat_t temp1 = reset;
 
         // setpoint set to 0
-        scheduler_task_attach(&check_stroom_nul, 1, 0);                     // attach adc_meet_stroom check every ms
-        scheduler_task_attach(&system_status_change, 10, 25, &temp1);       // attach system_status_change change status after 25 ms
-        scheduler_task_attach(&func, 10, 20);                               // attach gpio_power_rail_switch change after 20 ms
+        scheduler_task_attach(&check_stroom_nul, 1000, 0);                          // attach adc_meet_stroom check every ms
+        scheduler_task_attach(&system_status_change, 10000, 25000, &temp1);         // attach system_status_change change status after 25 ms
+        scheduler_task_attach(&func, 10, 20);                                       // attach gpio_power_rail_switch change after 20 ms
 
         systick_start();
         while(sys_status == nood) {
@@ -181,6 +186,8 @@ int main(void)
         }
         systick_stop();
         scheduler_task_detach_all();
+
+        regelaar_close();                                                   // regelaar stop nu
     }
     return 0;
 }

@@ -32,7 +32,7 @@ typedef struct pid_con{
 }PIDController;
 
 void regelaar_init();
-void regelaar(void *sp);
+void regelaar(void *sp, void *temp2);
 void regelaar_open();
 void regelaar_close();
 

@@ -85,7 +85,7 @@ void regelaar_close(void)
     PWM_stop(pwm);
 }
 
-void regelaar(void *sp)
+void regelaar(void *sp, void *temp2)
 {
     float setpoint = *(float *)sp;
     float voltage, current;
