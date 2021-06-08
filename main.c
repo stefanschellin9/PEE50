@@ -76,7 +76,7 @@ void system_status_get(void *stat_ptr, void *temp1)
 
 void func(void *temp1, void *temp2)
 {
-
+    printf("test\n");
 }
 
 void check_overwaarde(void *arg1, void *arg2)
@@ -126,6 +126,7 @@ void switch_relay(void *arg1, void *arg2)
 {
     gpio_schakelaar_off();       /* switch on relay */
 }
+
 /************************************ main ***********************************/
 /* the main function of the electrolyzer MCU */
 int main(void)
@@ -152,56 +153,66 @@ int main(void)
     regelaar_open();            /* open regelaar at 1% pwm */
 
     adc_open();
+
+    float testing = 50.0;
     while(1) {
-        uart_write_message("systeem wordt gereset");
-        while(sys_status == reset) {
-
-            // setpoint nul maken
-            float stroom;
-            adc_meet_stroom(&stroom);
-            if(stroom < 1) {
-                sys_status = wacht;
-                uart_write_message("\e[1;1H\e[2J");
-            }
-        }
-
-        uart_write_message("voer uw 8 windsnelheden in:\n");
-        while(sys_status == wacht) {
-            check_uart();
-        }
-
-        while(sys_status == gereed) {
-            uart_write_message("het systeem is gereed\n");
-            check_uart();
-        }
-
-        /* attach tasks to scheduler */
-        scheduler_task_attach(&uart_get_next_velocity, 300000000, 0, &velocity);        // om de 5 minuten
-        scheduler_task_attach(&calc_setpoint, 300000000, 0, &velocity, &set_point);
-        scheduler_task_attach(&regelaar, 200, 10000, &velocity, &set_point);            // regelaar functie om de 200 us na 10 ms delay
-        scheduler_task_attach(&check_overwaarde, 1000000, 0, &data_struct);             // check voor overwaardes elke seconde
-        scheduler_task_attach(&uart_send_data, 1000000, 0, &data_struct);               // send data every second
-
+        //regelaar_set(&testing, NULL);
+        scheduler_task_attach(&regelaar_set, 1000000, 5000000, &testing);
         systick_start();
-        while(sys_status == start) {
+        while(1) {
             scheduler_tasks_execute();
         }
         systick_stop();
-        scheduler_task_detach_all();
-
-        sys_stat_t temp1 = reset;
-
-        // setpoint set to 0
-        scheduler_task_attach(&check_stroom_nul, 1000, 0);                              // attach adc_meet_stroom check every ms
-        scheduler_task_attach(&system_status_change, 10000, 25000, &temp1);             // attach system_status_change change status after 25 ms
-        scheduler_task_attach(&switch_relay, 10000, 20000);                             // attach gpio_power_rail_switch change after 20 ms
-
-        systick_start();
-        while(sys_status == nood) {
-            scheduler_tasks_execute();
-        }
-        systick_stop();
-        scheduler_task_detach_all();
+//        scheduler_task_detach_all();
+//        uart_write_message("systeem wordt gereset");
+//        while(sys_status == reset) {
+//
+//            // setpoint nul maken
+//            float stroom;
+//            adc_meet_stroom(&stroom);
+//            if(stroom < 1) {
+//                sys_status = wacht;
+//                uart_write_message("\e[1;1H\e[2J");
+//            }
+//        }
+//
+//        uart_write_message("voer uw 8 windsnelheden in:\n");
+//        while(sys_status == wacht) {
+//            check_uart();
+//        }
+//
+//        while(sys_status == gereed) {
+//            uart_write_message("het systeem is gereed\n");
+//            check_uart();
+//        }
+//
+//        /* attach tasks to scheduler */
+//        scheduler_task_attach(&uart_get_next_velocity, 300000000, 0, &velocity);        // om de 5 minuten
+//        scheduler_task_attach(&calc_setpoint, 300000000, 0, &velocity, &set_point);
+//        scheduler_task_attach(&regelaar, 200, 10000, &velocity, &set_point);            // regelaar functie om de 200 us na 10 ms delay
+//        scheduler_task_attach(&check_overwaarde, 1000000, 0, &data_struct);             // check voor overwaardes elke seconde
+//        scheduler_task_attach(&uart_send_data, 1000000, 0, &data_struct);               // send data every second
+//
+//        systick_start();
+//        while(sys_status == start) {
+//            scheduler_tasks_execute();
+//        }
+//        systick_stop();
+//        scheduler_task_detach_all();
+//
+//        sys_stat_t temp1 = reset;
+//
+//        // setpoint set to 0
+//        scheduler_task_attach(&check_stroom_nul, 1000, 0);                              // attach adc_meet_stroom check every ms
+//        scheduler_task_attach(&system_status_change, 10000, 25000, &temp1);             // attach system_status_change change status after 25 ms
+//        scheduler_task_attach(&switch_relay, 10000, 20000);                             // attach gpio_power_rail_switch change after 20 ms
+//
+//        systick_start();
+//        while(sys_status == nood) {
+//            scheduler_tasks_execute();
+//        }
+//        systick_stop();
+//        scheduler_task_detach_all();
     }
 
     regelaar_close();

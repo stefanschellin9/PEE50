@@ -24,15 +24,20 @@ void scheduler_isr()
 
 	while(direct != NULL) {
         if(direct->task.delay > 0) {
-            direct->task.delay -= 200;                       // haal 200us van delay af
-
-        } else if(direct->task.timer > 0) {
-            direct->task.timer -= 200;                       // haal 200us can timer ad
-
-            if(direct->task.timer <= 0) {
+            if(direct->task.delay > 200) {
+                direct->task.delay -= 200;
+            } else {
+                direct->task.delay = 0;
+            }
+        } else {
+            if(direct->task.timer > 200) {
+                direct->task.timer -= 200;
+            } else {
+                direct->task.timer = 0;
                 direct->task.status = TASK_READY;
             }
         }
+
 		direct = direct->next;
 	}
 }
@@ -40,7 +45,7 @@ void scheduler_isr()
 /*************************** scheduler_task_attach ***************************/
 /* attaches a task to linked list and initializes its structure members */
 int8_t scheduler_task_attach(void (*task_ptr)(void *, void *),
-                              uint32_t interval, uint16_t delay, ...)                   // delay & interval zijn in us moeten deelbaar zijn door 200
+                              uint32_t interval, uint32_t delay, ...)                   // delay & interval zijn in us moeten deelbaar zijn door 200
 {
     va_list ap;
     va_start(ap, delay);

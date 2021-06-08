@@ -67,8 +67,18 @@ void regelaar_init()
 void regelaar_open(void)
 {
     PWM_start(pwm);                          // start PWM with 0% duty cycle
-    dutyValue = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * start_Duty)
-            / 100);
+    dutyValue = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * start_Duty) / 100);
+    PWM_setDuty(pwm, dutyValue);
+    PID.previous_Error = PID.Error = 0;
+    PID.previous_Output_Measurement_2 = PID.previous_Output_Measurement = 0;
+    PID.previous_Output_Measurement = PID.Output_Measurement = 0;
+    PID.Output = 0;
+}
+
+void regelaar_set(void *arg1, void *arg2)
+{
+    PWM_start(pwm);
+    dutyValue = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * *(float *)arg1) / 100);
     PWM_setDuty(pwm, dutyValue);
     PID.previous_Error = PID.Error = 0;
     PID.previous_Output_Measurement_2 = PID.previous_Output_Measurement = 0;
