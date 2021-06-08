@@ -36,12 +36,15 @@ ADC2.$hardware = system.deviceData.board.components.OPA4342.subComponents.AIN3;
 ADC3.$name     = "CONFIG_ADC_2";
 ADC3.$hardware = system.deviceData.board.components.OPA4342.subComponents.AIN2;
 
-GPIO1.$name           = "CONFIG_GPIO_0";
-GPIO1.mode            = "Output";
-GPIO1.gpioPin.$assign = "boosterpack.28";
+GPIO1.$name              = "CONFIG_GPIO_0";
+GPIO1.mode               = "Output";
+GPIO1.initialOutputState = "High";
+GPIO1.gpioPin.$assign    = "boosterpack.28";
 
-GPIO2.$name           = "CONFIG_GPIO_1";
-GPIO2.gpioPin.$assign = "boosterpack.8";
+GPIO2.$name              = "CONFIG_GPIO_1";
+GPIO2.mode               = "Output";
+GPIO2.initialOutputState = "High";
+GPIO2.gpioPin.$assign    = "boosterpack.8";
 
 GPIO3.$name     = "CONFIG_GPIO_2";
 GPIO3.$hardware = system.deviceData.board.components.LED_RED;

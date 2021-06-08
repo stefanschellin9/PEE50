@@ -16,5 +16,6 @@ float calc_pressure(float height);
 
 float calc_density(float temperature, float height);
 
+void calc_setpoint(void *windsnelheid, void *set_point);
 
 #endif /* PEE50_SETPOINT_H_ */

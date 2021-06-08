@@ -19,8 +19,8 @@ struct func_args {
 struct task_struct {
         void (*func_ptr)(void *, void *);
         uint16_t delay;
-        uint16_t interval;
-        uint16_t timer;
+        uint32_t interval;
+        uint32_t timer;
         uint16_t status;
         struct func_args param;
 };
@@ -38,7 +38,7 @@ void scheduler_isr(void);
 /*************************** scheduler_task_attach ***************************/
 /* attaches a task to linked list and initializes its structure members */
 int8_t scheduler_task_attach(void (*task_ptr)(void *, void *),
-                             uint16_t interval, uint16_t delay, ...);
+                             uint32_t interval, uint16_t delay, ...);
 
 /*************************** scheduler_task_detach ***************************/
 /* detaches a task from the linked list and frees its allocated memory */

@@ -44,9 +44,9 @@ float calc_density(float temperature, float height)
         return y;
 }
 
-float calc_setpoint(void *windsnelheid, void *set_point)
+void calc_setpoint(void *windsnelheid, void *set_point)
 {
-    0.5 * calc_density(temperatuur, hoogte) * calc_area(rad) * pow(*(int *)windsnelheid,3) * calc_cp(lamb, bet);
+    *(float *)set_point = 0.5 * calc_density(temperatuur, hoogte) * calc_area(rad) * pow(*(int *)windsnelheid,3) * calc_cp(lamb, bet);
 }
 
 //int main()

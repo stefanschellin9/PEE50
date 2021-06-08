@@ -130,7 +130,7 @@ void uart_send_data(void *data_struct, void *temp1)
     UART_write(uart_handle, chr, sizeof(chr));
 }
 
-void uart_get_next_velocity(void *p){
+void uart_get_next_velocity(void *p, void *arg2){
     *(int *)p = buffer_uart_init[tijd_index];
     tijd_index++;
     //UART_write(uart_handle, *p, sizeof(int));
