@@ -12,6 +12,7 @@ typedef struct send_data {
     float stroom;
     float spanning_voor;
     float spanning_na;
+    float temperatuur;
 } send_data_t;
 
 typedef enum sys_stat {

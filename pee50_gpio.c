@@ -16,6 +16,7 @@ void gpio_init()
     GPIO_init();
     GPIO_setConfig(CONFIG_GPIO_0, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_STR_HIGH | GPIO_CFG_OUT_LOW);
     GPIO_setConfig(CONFIG_GPIO_1, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_STR_HIGH | GPIO_CFG_OUT_LOW);
+    GPIO_setConfig(CONFIG_GPIO_2, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_STR_MED | GPIO_CFG_OUT_LOW);
 }
 
 void gpio_fan_on()
@@ -26,6 +27,11 @@ void gpio_fan_on()
 void gpio_fan_off()
 {
     GPIO_write(CONFIG_GPIO_0, CONFIG_LED_OFF);
+}
+
+void gpio_led_toggle()
+{
+    GPIO_toggle(CONFIG_GPIO_2);
 }
 
 void gpio_schakelaar_on()

@@ -14,6 +14,8 @@ void gpio_fan_on();
 
 void gpio_fan_off();
 
+void gpio_led_toggle();
+
 void gpio_schakelaar_on();
 
 void gpio_schakelaar_off();

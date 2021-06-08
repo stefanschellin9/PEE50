@@ -36,6 +36,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <unistd.h>
 
 /* Driver configuration */
 #include "ti_drivers_config.h"
@@ -77,24 +78,24 @@ void func(void *temp1, void *temp2)
 
 }
 
-void check_overwaarde(void *temp1, void *temp2)
+void check_overwaarde(void *arg1, void *arg2)
 {
     sys_stat_t temp = nood;
-    float stroom, spanning_voor, spanning_na, celsius;
-    adc_meet_stroom(&stroom);
-    if(stroom > MAX_STROOM) {
+
+    adc_meet_stroom(&((send_data_t *)arg1)->stroom);
+    if(((send_data_t *)arg1)->stroom > MAX_STROOM) {
         system_status_change(&temp, NULL);
     }
-    adc_meet_spanning_voor(&spanning_voor);
-    if(spanning_voor > MAX_SPANNING_VOOR) {
+    adc_meet_spanning_voor(&((send_data_t *)arg1)->spanning_voor);
+    if(((send_data_t *)arg1)->spanning_voor > MAX_SPANNING_VOOR) {
         system_status_change(&temp, NULL);
     }
-    adc_meet_spanning_na(&spanning_na);
-    if(spanning_na > MAX_SPANNING_NA) {
+    adc_meet_spanning_na(&((send_data_t *)arg1)->spanning_na);
+    if(((send_data_t *)arg1)->spanning_na > MAX_SPANNING_NA) {
         system_status_change(&temp, NULL);
     }
-    tmp117_read_temp_c(&celsius);
-    if(celsius > MAX_TEMPERATUUR) {
+    tmp117_read_temp_c(&((send_data_t *)arg1)->temperatuur);
+    if(((send_data_t *)arg1)->temperatuur > MAX_TEMPERATUUR) {
         system_status_change(&temp, NULL);
     }
 }
@@ -120,7 +121,6 @@ void check_stroom_nul(void *temp1, void *temp2)
     }
 }
 
-
 /************************************ main ***********************************/
 /* the main function of the electrolyzer MCU */
 int main(void)
@@ -129,65 +129,79 @@ int main(void)
     Board_init();
     NoRTOS_start();
 
+    /* variable definition */
+    send_data_t data_struct = {0.0, 0.0, 0.0, 0.0};
+
     /* initialize once */
-    systick_init();                                                         // init systicks
-    gpio_init();                                                            // init gpio
-    uart_init_callback();                                                   // init uart in callback mode
-    tmp117_init();                                                          // init i2c temp sensor
-    adc_init();                                                             // init adc
+    gpio_init();                /* initialize gpio */
+    gpio_schakelaar_on();       /* switch on relay */
 
+    systick_init();             /* initialize systick */
+    uart_init_callback();       /* initialize uart for callback mode */
+    tmp117_init();              /* initialize tmp117 temperature sensor */
+    adc_init();                 /* initialize adc */
+    regelaar_init();            /* initialize regelaar */
 
+    regelaar_open();            /* open regelaar at 1% pwm */
+
+    adc_open();
     while(1) {
-        uart_write_message("systeem wordt gereset");
-        while(sys_status == reset) {
-
-            // setpoint nul maken
-            float stroom;
-            adc_meet_stroom(&stroom);
-            if(stroom < 1) {
-                sys_status = wacht;
-                uart_write_message("\e[1;1H\e[2J");
-            }
-        }
-
-        uart_write_message("voer uw 8 windsnelheden in:\n");
-        while(sys_status == wacht) {
-            check_uart();
-        }
-        while(sys_status == gereed) {
-            uart_write_message("het systeem is gereed\n");
-            check_uart();
-        }
-
-        /* attach tasks to scheduler */
-        scheduler_task_attach(&check_overwaarde, 1000000, 1000);                    // check voor overwaardes elke seconde
-        scheduler_task_attach(&regelaar, 200, 10000);                               // regelaar functie om de 200 us na 10 ms delay
-        scheduler_task_attach(&func, 48, 32);
-
-        regelaar_open();                                                            // regelaar start pas nu
-
-        systick_start();
-        while(sys_status == start) {
-            scheduler_tasks_execute();
-        }
-        systick_stop();
-        scheduler_task_detach_all();
-
-        sys_stat_t temp1 = reset;
-
-        // setpoint set to 0
-        scheduler_task_attach(&check_stroom_nul, 1000, 0);                          // attach adc_meet_stroom check every ms
-        scheduler_task_attach(&system_status_change, 10000, 25000, &temp1);         // attach system_status_change change status after 25 ms
-        scheduler_task_attach(&func, 10, 20);                                       // attach gpio_power_rail_switch change after 20 ms
-
-        systick_start();
-        while(sys_status == nood) {
-            scheduler_tasks_execute();
-        }
-        systick_stop();
-        scheduler_task_detach_all();
-
-        regelaar_close();                                                   // regelaar stop nu
+        check_overwaarde(&data_struct, NULL);
+        printf("%f\n",data_struct.stroom);
+//        uart_write_message("systeem wordt gereset");
+//        while(sys_status == reset) {
+//
+//            // setpoint nul maken
+//            float stroom;
+//            adc_meet_stroom(&stroom, NULL);
+//            if(stroom < 1) {
+//                sys_status = wacht;
+//                uart_write_message("\e[1;1H\e[2J");
+//            }
+//        }
+//
+//        uart_write_message("voer uw 8 windsnelheden in:\n");
+//        while(sys_status == wacht) {
+//            check_uart();
+//        }
+//
+//        while(sys_status == gereed) {
+//            uart_write_message("het systeem is gereed\n");
+//            check_uart();
+//        }
+//
+//        /* attach tasks to scheduler */
+//        scheduler_task_attach(&check_overwaarde, 1000000, 1000);                    // check voor overwaardes elke seconde
+//        scheduler_task_attach(&regelaar, 200, 10000);                               // regelaar functie om de 200 us na 10 ms delay
+//
+//        // measure stroom spanning voor en na
+//        scheduler_task_attach(&uart_send_data, 1000000, 0);
+//
+//        regelaar_open();                                                            // regelaar start pas nu
+//
+//        systick_start();
+//        while(sys_status == start) {
+//            scheduler_tasks_execute();
+//        }
+//        systick_stop();
+//        scheduler_task_detach_all();
+//
+//        sys_stat_t temp1 = reset;
+//
+//        // setpoint set to 0
+//        scheduler_task_attach(&check_stroom_nul, 1000, 0);                          // attach adc_meet_stroom check every ms
+//        scheduler_task_attach(&system_status_change, 10000, 25000, &temp1);         // attach system_status_change change status after 25 ms
+//        scheduler_task_attach(&func, 10, 20);                                       // attach gpio_power_rail_switch change after 20 ms
+//
+//        systick_start();
+//        while(sys_status == nood) {
+//            scheduler_tasks_execute();
+//        }
+//        systick_stop();
+//        scheduler_task_detach_all();
     }
+
+    regelaar_close();
+
     return 0;
 }

@@ -106,7 +106,7 @@ void uart_write_message(char *message)
     UART_write(uart_handle, message, strlen(message));
 }
 
-void uart_send_data(void *data_struct)
+void uart_send_data(void *data_struct, void *temp1)
 {
 
     char chr[5];

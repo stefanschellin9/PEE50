@@ -47,8 +47,7 @@ int8_t cc3220_i2c_write_8bit(uint8_t devAddr, uint8_t regAddr, int8_t write_data
     i2c_transaction.readBuf    = NULL;
     i2c_transaction.readCount  = 0;
 
-    if(!I2C_transfer(i2c_handle, &i2c_transaction))
-    {
+    if(!I2C_transfer(i2c_handle, &i2c_transaction)) {
         return -1;
     }
     return 0;
@@ -66,8 +65,7 @@ int8_t cc3220_i2c_read_8bit(uint8_t devAddr, uint8_t regAddr, int8_t *read_data)
     i2c_transaction.readBuf    = read_buffer;
     i2c_transaction.readCount  = 1;
 
-    if(!I2C_transfer(i2c_handle, &i2c_transaction))
-    {
+    if(!I2C_transfer(i2c_handle, &i2c_transaction)) {
         return -1;
     }
     return 0;
@@ -87,8 +85,7 @@ int8_t cc3220_i2c_write_16bit(uint8_t devAddr, uint8_t regAddr, int16_t write_da
     i2c_transaction.readBuf    = NULL;
     i2c_transaction.readCount  = 0;
 
-    if(!I2C_transfer(i2c_handle, &i2c_transaction))
-    {
+    if(!I2C_transfer(i2c_handle, &i2c_transaction)) {
         return -1;
     }
     return 0;
@@ -106,8 +103,7 @@ int8_t cc3220_i2c_read_16bit(uint8_t devAddr, uint8_t regAddr, int16_t *read_dat
     i2c_transaction.readBuf    = read_buffer;
     i2c_transaction.readCount  = 2;
 
-    if(!I2C_transfer(i2c_handle, &i2c_transaction))
-    {
+    if(!I2C_transfer(i2c_handle, &i2c_transaction)) {
         return -1;
     }
 
