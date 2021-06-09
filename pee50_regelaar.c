@@ -50,7 +50,7 @@ void regelaar_init()
     pwmParams.periodUnits = PWM_PERIOD_HZ;// Period is in Hz
     pwmParams.periodValue = 30000;// 1MHz
     pwmParams.dutyUnits = PWM_DUTY_FRACTION;// Duty is in fractional percentage
-    pwmParams.dutyValue = 10;// 0% initial duty cycle
+    pwmParams.dutyValue = 1;// 0% initial duty cycle
     // Open the PWM instance
     pwm = PWM_open(CONFIG_PWM_0, &pwmParams);
     if (pwm == NULL)

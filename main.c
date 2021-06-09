@@ -141,6 +141,10 @@ int main(void)
     float set_point = 0.0;
 
     /* initialize once */
+    regelaar_init();            /* initialize regelaar */
+
+    regelaar_open();            /* open regelaar at 1% pwm */
+
     gpio_init();                /* initialize gpio */
     gpio_schakelaar_on();       /* switch on relay */
 
@@ -148,22 +152,22 @@ int main(void)
     uart_init_callback();       /* initialize uart for callback mode */
     tmp117_init();              /* initialize tmp117 temperature sensor */
     adc_init();                 /* initialize adc */
-    regelaar_init();            /* initialize regelaar */
-
-    regelaar_open();            /* open regelaar at 1% pwm */
 
     adc_open();
+    uart_open();
 
     float testing = 50.0;
     while(1) {
         //regelaar_set(&testing, NULL);
-        scheduler_task_attach(&regelaar_set, 1000000, 5000000, &testing);
-        systick_start();
-        while(1) {
-            scheduler_tasks_execute();
-        }
-        systick_stop();
+//        scheduler_task_attach(&regelaar_set, 1000000, 5000000, &testing);
+//        systick_start();
+//        while(1) {
+//            scheduler_tasks_execute();
+//        }
+//        systick_stop();
 //        scheduler_task_detach_all();
+
+        uart_write_message("test\n");
 //        uart_write_message("systeem wordt gereset");
 //        while(sys_status == reset) {
 //
@@ -214,7 +218,7 @@ int main(void)
 //        systick_stop();
 //        scheduler_task_detach_all();
     }
-
+    uart_close();
     regelaar_close();
 
     return 0;
