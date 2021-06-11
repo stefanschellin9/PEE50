@@ -45,13 +45,13 @@ static const double rounders[MAX_PRECISION + 1] =
     0.00000000005       // 10
 };
 
-char *ftoa(double f, char *buf, int precision)
+char *ftoa(float f, char *buf, int precision)
 {
     char *ptr = buf;
     char *p = ptr;
     char *p1;
     char c;
-    long intPart;
+    int intPart;
 
     // check precision bounds
     if (precision > MAX_PRECISION)

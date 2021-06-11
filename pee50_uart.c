@@ -108,25 +108,25 @@ void uart_write_message(char *message)
 
 void uart_send_data(void *data_struct, void *temp1)
 {
-
+    uart_write_message("\e[1;1H\e[2J");
     char chr[5];
     ftoa(((send_data_t *)data_struct)->stroom, &chr, 5);
-    UART_write(uart_handle,"\r\n stroom = ", 14);
+    UART_write(uart_handle,"\r\n stroom = ", 13);
     UART_write(uart_handle, chr, sizeof(chr));
 
     ftoa(((send_data_t *)data_struct)->spanning_na, &chr, 5);
-    UART_write(uart_handle,"\r\n spanning uit = ", 20);
+    UART_write(uart_handle,"\r\n spanning uit = ", 19);
     UART_write(uart_handle, chr, sizeof(chr));
 
     ftoa(((send_data_t *)data_struct)->spanning_voor, &chr, 5);
-    UART_write(uart_handle, "\r\n spanning in = ", 19);
+    UART_write(uart_handle, "\r\n spanning in =", 17);
     UART_write(uart_handle, chr, sizeof(chr));
 
     float vermogen = ((send_data_t *)data_struct)->stroom;
     vermogen *= ((send_data_t *)data_struct)->spanning_na;
 
     ftoa(vermogen, &chr, 5);
-    UART_write(uart_handle, "\r\n vermogen = ", 16);
+    UART_write(uart_handle, "\r\n vermogen = ", 15);
     UART_write(uart_handle, chr, sizeof(chr));
 }
 

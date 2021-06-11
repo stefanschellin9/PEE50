@@ -20,15 +20,15 @@
 #include "pee50_adc.h"
 
 
-#define ti  0.0002      // 14.7;
-#define td  0.00033     // 3.6;
-#define ts  0.001       // 1ms
-#define kc  0.11        // 8.4;
+#define ti  0.0012      // 14.7;
+#define td  0.000036     // 3.6;
+#define ts  0.0002       // 1ms
+#define kc  2.25        // 8.4;
 
 PIDController PID;
 
 float start_Duty = 1;
-PIDController ParamsPID;
+
 PWM_Handle pwm;
 PWM_Params pwmParams;
 float dutyValue;
@@ -38,9 +38,9 @@ uint32_t dutyCycleMax = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 20 ) / 1
 
 void regelaar_init()
 {
-    ParamsPID.ki = kc*(ts/ti * 2);
-    ParamsPID.kd = kc*(td/ts);
-    ParamsPID.kp = kc;
+    PID.ki = kc*(ts/ti * 2);
+    PID.kd = kc*(td/ts);
+    PID.kp = kc;
 
  // Initialize the PWM parameters
     PWM_init();

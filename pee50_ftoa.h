@@ -8,6 +8,6 @@
 #ifndef PEE50_FTOA_H_
 #define PEE50_FTOA_H_
 
-char *ftoa(double f, char *buf, int precision);
+char *ftoa(float f, char *buf, int precision);
 
 #endif /* PEE50_FTOA_H_ */

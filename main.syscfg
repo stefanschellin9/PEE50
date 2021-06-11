@@ -45,7 +45,8 @@ GPIO1.gpioPin.$assign    = "boosterpack.28";
 GPIO2.$name              = "CONFIG_GPIO_1";
 GPIO2.mode               = "Output";
 GPIO2.initialOutputState = "High";
-GPIO2.gpioPin.$assign    = "boosterpack.8";
+GPIO2.outputStrength     = "High";
+GPIO2.gpioPin.$assign    = "boosterpack.27";
 
 GPIO3.$name     = "CONFIG_GPIO_2";
 GPIO3.$hardware = system.deviceData.board.components.LED_RED;
