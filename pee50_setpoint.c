@@ -11,15 +11,15 @@
 #include "pee50_setpoint.h"
 
 #define temperatuur 25
-#define hoogte 10
-#define rad 4
-#define lamb M_PI*1.3333333
-#define bet  80
+#define hoogte 18
+#define rad 1.56
+#define lamb 6.9
+#define bet  5
 
 float calc_cp(double lambda, int beta)
 {
         float x = (1/(lambda + 0.08*beta) - 0.035/(pow(beta, 3) + 1));
-        float y = 0.5176*(116*x - 0.4*beta - 5)*exp(-21*x) + 0.068*lambda;
+        float y = 0.5176*(116*x - 0.4*beta - 5)*exp(-21*x) + 0.0068*lambda;
         return y;
 }
 
@@ -44,31 +44,21 @@ float calc_density(float temperature, float height)
         return y;
 }
 
-void calc_setpoint(void *windsnelheid, void *set_point)
+float calc_offset(int i)
 {
-    *(float *)set_point = 0.5 * calc_density(temperatuur, hoogte) * calc_area(rad) * pow(*(int *)windsnelheid,3) * calc_cp(lamb, bet);
+    float x = 0.00673002 * i * i - 0.22051 * i + 2.1373;
+    if(x > 1.45) {
+        x = 1.45;
+    }
+    return x;
 }
 
-//int main()
-//{
-//        clock_t start, end;
-//        start = clock();
-//        for(int i = 20; i <= 100; i++)
-//        {
-//            printf("%d",i);
-//            printf("  %f",calc_jarin(i));
-//            printf("  %f",calc_jarin2(i));
-//            printf("  %f\n",calc_jarin3(i));
-//        }
-//        end = clock();
-//        printf("%f ticks\n",(double)(end-start));
-//
-//
-//
-//        //printf("%f\n",calc_cp(120, 120));
-//        //printf("%f\n",calc_area(2));
-//        //printf("%f\n", calc_pressure(20));
-//        //printf("%f\n",calc_density(20,20));
-//
-//        return 0;
-//}
+void calc_setpoint(void *windsnelheid, void *set_point)
+{
+    int i = *(int *)windsnelheid;
+    *(float *)set_point = 0.5 * calc_offset(i) *calc_density(temperatuur, hoogte) * calc_area(rad) * i * i * i * calc_cp(lamb, bet);
+    if(*(float *)set_point > 1400) {
+        *(float *)set_point = 1400;
+    }
+}
+
