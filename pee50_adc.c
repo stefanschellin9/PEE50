@@ -40,6 +40,8 @@ ADC_Handle   adc2;
 ADC_Params   params;
 //ADC_Params   params1;
 //ADC_Params   params2;
+#define max_waarde 4
+#define max_deling 1/max_waarde
 
 void adc_init()
 {
@@ -74,40 +76,22 @@ void adc_close()
 }
 
 void adc_meet_stroom (void *stroom) {
-    int_fast16_t res0;
-
     uint16_t adcValue;
-
-    res0 = ADC_convert(adc0, &adcValue);
-
-    if (res0 == ADC_STATUS_SUCCESS) {
-
-        *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, adcValue)*0.000001);
+    if(ADC_convert(adc0, &adcValue) == ADC_STATUS_SUCCESS) {
+        *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, adcValue)*0.0000585589777); //0.000001*58.5589777
     }
 }
 
 void adc_meet_spanning_voor (void *spanning_voor) {
-    int_fast16_t res1;
     uint16_t adcValue;
-
-    res1 = ADC_convert(adc1, &adcValue);
-
-    if (res1 == ADC_STATUS_SUCCESS) {
-
-        *(float *)spanning_voor = (ADC_convertRawToMicroVolts(adc1, adcValue)*0.000001);
+    if(ADC_convert(adc1, &adcValue) == ADC_STATUS_SUCCESS) {
+        *(float *)spanning_voor = (ADC_convertRawToMicroVolts(adc1, adcValue)*0.0000526299809); //0.000001*52.6299809
     }
-
 }
 
 void adc_meet_spanning_na (void *spanning_na) {
-    int_fast16_t res2;
     uint16_t adcValue;
-
-    res2 = ADC_convert(adc2, &adcValue);
-
-    if (res2 == ADC_STATUS_SUCCESS) {
-
-        *(float *)spanning_na = ADC_convertRawToMicroVolts(adc2, adcValue)*0.000001;
+    if(ADC_convert(adc2, &adcValue) == ADC_STATUS_SUCCESS) {
+        *(float *)spanning_na = (ADC_convertRawToMicroVolts(adc2, adcValue)*0.0000593919453); //0.000001*59.3919453
     }
-
 }

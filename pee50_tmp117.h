@@ -8,7 +8,7 @@
 #ifndef TMP117_H_PEE50
 #define TMP117_H_PEE50
 
-#define tmp117_addr         0x48
+#define tmp117_addr         0x49
 #define DEVICE_ID_VALUE     0x0117
 #define TMP117_RESOLUTION   0.0078125f
 

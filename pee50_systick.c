@@ -39,7 +39,7 @@ void systick_function_timer(void (*func_ptr)(void *), void *temp)
     int stop = SysTickValueGet();
 
     int delta = SysTickPeriodGet()&(start-stop);
-    printf("processor ticks: %d tijd in US: %f\n", delta, (double)delta/80);
+    printf("processor ticks: %d tijd in US: %f\n", delta, (double)delta*0.0125);
 }
 
 

@@ -81,7 +81,7 @@ void uart_init_callback()
 {
     UART_init();
     UART_Params_init(&uart_params);
-    uart_params.baudRate = 9600;
+    uart_params.baudRate = 115200;
     uart_params.readMode = UART_MODE_CALLBACK;
     uart_params.readCallback = &uart_isr;
     uart_params.readEcho = UART_ECHO_OFF;
@@ -122,12 +122,21 @@ void uart_send_data(void *data_struct, void *temp1)
     UART_write(uart_handle, "\r\n spanning in =", 17);
     UART_write(uart_handle, chr, sizeof(chr));
 
+    //ftoa(((send_data_t *)data_struct)->temperatuur, &chr, 5);
+    sprintf(chr, "%.4f",((send_data_t *)data_struct)->temperatuur);
+    UART_write(uart_handle, "\r\n temp in =", 13);
+    UART_write(uart_handle, chr, sizeof(chr));
+
     float vermogen = ((send_data_t *)data_struct)->stroom;
     vermogen *= ((send_data_t *)data_struct)->spanning_na;
 
     ftoa(vermogen, &chr, 5);
     UART_write(uart_handle, "\r\n vermogen = ", 15);
     UART_write(uart_handle, chr, sizeof(chr));
+
+//    ftoa(((send_data_t *)data_struct)->temperatuur, &chr, 5);
+//    UART_write(uart_handle, "\r\n temperatuur = ", 18);
+//    UART_write(uart_handle, chr, sizeof(chr));
 }
 
 void uart_get_next_velocity(void *p, void *arg2){
