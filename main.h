@@ -14,6 +14,7 @@ typedef struct send_data {
     float spanning_na;
     float temperatuur;
     float set_point;
+    int velocity;
 } send_data_t;
 
 typedef enum sys_stat {

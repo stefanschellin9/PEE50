@@ -56,10 +56,8 @@ void tmp117_read_temp_c(void *celsius)
 
     cc3220_i2c_init();
     cc3220_i2c_open();
-    if(cc3220_i2c_read_16bit((uint8_t)tmp117_addr,
-                          (uint8_t)TMP117_TEMP_RESULT, &data) < 0){
-        printf("fuck\n");
-    }
+    cc3220_i2c_read_16bit((uint8_t)tmp117_addr,
+                          (uint8_t)TMP117_TEMP_RESULT, &data);
     cc3220_i2c_close();
 
     *(float *)celsius = (data*TMP117_RESOLUTION);

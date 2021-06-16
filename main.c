@@ -57,13 +57,13 @@
 #include "pee50_timer.h"
 
 #define MAX_STROOM          40
-#define MAX_SPANNING_VOOR   38
-#define MAX_SPANNING_NA     38
+#define MAX_SPANNING_VOOR   35
+#define MAX_SPANNING_NA     40
 #define MAX_TEMPERATUUR     150
 #define TEMP_FAN_ON         60
 
 sys_stat_t sys_status = reset;
-float set_point = 0.0;
+send_data_t data_struct = {0.0, 0.0, 0.0, 0.0, 0.0};
 
 void system_status_change(void *stat_ptr, void *temp1)
 {
@@ -72,7 +72,7 @@ void system_status_change(void *stat_ptr, void *temp1)
 
 void get_setpoint(void *arg1, void *arg2)
 {
-    *(float *)arg1 = set_point;
+    *(float *)arg1 = data_struct.set_point;
 }
 
 void system_status_get(void *stat_ptr, void *temp1)
@@ -89,20 +89,20 @@ void check_overwaarde(void *arg1, void *arg2)
 {
     sys_stat_t temp = nood;
 
-    adc_meet_stroom(&((send_data_t *)arg1)->stroom);
-    if(((send_data_t *)arg1)->stroom > MAX_STROOM) {
+    adc_meet_stroom(&data_struct.stroom);
+    if(data_struct.stroom > MAX_STROOM) {
         system_status_change(&temp, NULL);
     }
-    adc_meet_spanning_voor(&((send_data_t *)arg1)->spanning_voor);
-    if(((send_data_t *)arg1)->spanning_voor > MAX_SPANNING_VOOR) {
+    adc_meet_spanning_voor(&data_struct.spanning_voor);
+    if(data_struct.spanning_voor > MAX_SPANNING_VOOR) {
         system_status_change(&temp, NULL);
     }
-    adc_meet_spanning_na(&((send_data_t *)arg1)->spanning_na);
-    if(((send_data_t *)arg1)->spanning_na > MAX_SPANNING_NA) {
+    adc_meet_spanning_na(&data_struct.spanning_na);
+    if(data_struct.spanning_na > MAX_SPANNING_NA) {
         system_status_change(&temp, NULL);
     }
-    tmp117_read_temp_c(&((send_data_t *)arg1)->temperatuur);
-    if(((send_data_t *)arg1)->temperatuur > MAX_TEMPERATUUR) {
+    tmp117_read_temp_c(&data_struct.temperatuur);
+    if(data_struct.temperatuur > MAX_TEMPERATUUR) {
         system_status_change(&temp, NULL);
     }
 }
@@ -136,7 +136,7 @@ void switch_relay(void *arg1, void *arg2)
 void next_setpoint(void *velocity, void *setpoint)
 {
     uart_get_next_velocity(&velocity, NULL);
-    calc_setpoint(&velocity, &((send_data_t *)arg1)->set_point);     // calculate the next setpoint with
+    calc_setpoint(&velocity, &data_struct.set_point);     // calculate the next setpoint with
 }
 
 /************************************ main ***********************************/
@@ -148,7 +148,6 @@ int main(void)
     NoRTOS_start();
 
     /* variable definition */
-    send_data_t data_struct = {0.0, 0.0, 0.0, 0.0, 0.0};
 
     /* initialize once */
     regelaar_init();            /* initialize regelaar */
@@ -165,8 +164,6 @@ int main(void)
 
     adc_open();
     uart_open();
-
-    float testing = 5;
 
     timer_init(5000);       // 5000Hz/200us interrupt voor regelaar
 
@@ -187,24 +184,25 @@ int main(void)
 //        while(sys_status == reset) {
 //            check_uart();
 //        }
+//        uart_write_message("het systeem is gereed\n");
 //        while(sys_status == gereed) {
-//            uart_write_message("het systeem is gereed\n");
 //            check_uart();
 //        }
-//
-//        scheduler_task_attach(&next_setpoint, 300000, 0, &velocity, &data_struct);      // om de 5 minuten
-//        scheduler_task_attach(&uart_send_data, 100, 0, &data_struct); // 100 ms 0 ms delay
-//        systick_start();
-//        timer_start();
-//        while(sys_status == start) {
-//            scheduler_tasks_execute();
-//        }
-//        timer_stop();
-//        systick_stop();
-//
-//        while(sys_status == nood) {
-//            sys_status == reset;
-//        }
+
+//        scheduler_task_attach(&next_setpoint, 5000, 0, &data_struct.velocity, &data_struct);      // om de 5 minuten
+//        scheduler_task_attach(&uart_send_data, 1000, 0, &data_struct); // 100 ms 0 ms delay
+//        scheduler_task_attach(&check_overwaarde, 1000,0);
+        //systick_start();
+        timer_start();
+        while(1) {
+            scheduler_tasks_execute();
+        }
+        timer_stop();
+        systick_stop();
+
+        while(sys_status == nood) {
+            sys_status == reset;
+        }
 
 
 //        scheduler_task_attach(&regelaar_set, 1000, 5000, &testing);
@@ -277,7 +275,7 @@ int main(void)
     }
     gpio_schakelaar_off();
     uart_close();
-    regelaar_close();
+    //regelaar_close();
 
     return 0;
 }

@@ -123,6 +123,9 @@ void uart_send_data(void *data_struct, void *temp1)
     sprintf(chr, "temperatuur = %.3f\n",((send_data_t *)data_struct)->temperatuur);
     uart_write_message(chr);
 
+    sprintf(chr, "setpoint = %.3f\n",((send_data_t *)data_struct)->set_point);
+    uart_write_message(chr);
+
     float vermogen = ((send_data_t *)data_struct)->stroom;
     vermogen *= ((send_data_t *)data_struct)->spanning_na;
 
@@ -133,6 +136,7 @@ void uart_send_data(void *data_struct, void *temp1)
 void uart_get_next_velocity(void *p, void *arg2){
     *(int *)p = buffer_uart_init[tijd_index];
     tijd_index++;
+    tijd_index %= MAX_BUFF_SIZE;
     //UART_write(uart_handle, *p, sizeof(int));
 }
 

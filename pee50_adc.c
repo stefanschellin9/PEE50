@@ -78,20 +78,20 @@ void adc_close()
 void adc_meet_stroom (void *stroom) {
     uint16_t adcValue;
     if(ADC_convert(adc0, &adcValue) == ADC_STATUS_SUCCESS) {
-        *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, adcValue)*0.0000585589777); //0.000001*58.5589777
+        *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, adcValue)*0.00008205128205); //0.000001*58.5589777 //0.000001*82.05128205
     }
 }
 
 void adc_meet_spanning_voor (void *spanning_voor) {
     uint16_t adcValue;
     if(ADC_convert(adc1, &adcValue) == ADC_STATUS_SUCCESS) {
-        *(float *)spanning_voor = (ADC_convertRawToMicroVolts(adc1, adcValue)*0.0000526299809); //0.000001*52.6299809
+        *(float *)spanning_voor = (ADC_convertRawToMicroVolts(adc1, adcValue)*0.00005242718447); //0.000001*52.6299809 //0.000001*52.42718447
     }
 }
 
 void adc_meet_spanning_na (void *spanning_na) {
     uint16_t adcValue;
     if(ADC_convert(adc2, &adcValue) == ADC_STATUS_SUCCESS) {
-        *(float *)spanning_na = (ADC_convertRawToMicroVolts(adc2, adcValue)*0.0000593919453); //0.000001*59.3919453
+        *(float *)spanning_na = (ADC_convertRawToMicroVolts(adc2, adcValue)*0.0000593220339); //0.000001*59.3919453 //0.000001*59.3220339
     }
 }
