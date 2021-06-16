@@ -24,20 +24,16 @@ void scheduler_isr()
 
 	while(direct != NULL) {
         if(direct->task.delay > 0) {
-            if(direct->task.delay > 200) {
-                direct->task.delay -= 200;
-            } else {
-                direct->task.delay = 0;
-            }
+            direct->task.delay--;
         } else {
-            if(direct->task.timer > 200) {
-                direct->task.timer -= 200;
-            } else {
-                direct->task.timer = 0;
+            if(direct->task.timer > 0) {
+                direct->task.timer--;
+            }
+
+            if(direct->task.timer == 0) {
                 direct->task.status = TASK_READY;
             }
         }
-
 		direct = direct->next;
 	}
 }
@@ -109,7 +105,7 @@ void scheduler_tasks_execute()
         if(direct->task.status == TASK_READY) {
             direct->task.func_ptr(direct->task.param.arg1, direct->task.param.arg2);
             direct->task.status = ~TASK_READY;
-            direct->task.timer = direct->task.interval;
+            direct->task.timer = direct->task.interval - 1; // if 100ms from 99 to 0 is 100 steps
         }
         direct = direct->next;
     }

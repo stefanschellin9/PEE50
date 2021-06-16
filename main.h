@@ -13,6 +13,7 @@ typedef struct send_data {
     float spanning_voor;
     float spanning_na;
     float temperatuur;
+    float set_point;
 } send_data_t;
 
 typedef enum sys_stat {
@@ -25,5 +26,6 @@ typedef enum sys_stat {
 
 void system_status_change(void *stat_ptr, void *temp1);
 void system_status_get(void *stat_ptr, void *temp1);
+void get_setpoint(void *arg1, void *arg2);
 
 #endif /* MAIN_H_PEE50 */

@@ -81,7 +81,7 @@ void uart_init_callback()
 {
     UART_init();
     UART_Params_init(&uart_params);
-    uart_params.baudRate = 115200;
+    uart_params.baudRate = 921600;
     uart_params.readMode = UART_MODE_CALLBACK;
     uart_params.readCallback = &uart_isr;
     uart_params.readEcho = UART_ECHO_OFF;
@@ -109,34 +109,25 @@ void uart_write_message(char *message)
 void uart_send_data(void *data_struct, void *temp1)
 {
     uart_write_message("\e[1;1H\e[2J");
-    char chr[5];
-    ftoa(((send_data_t *)data_struct)->stroom, &chr, 5);
-    UART_write(uart_handle,"\r\n stroom = ", 13);
-    UART_write(uart_handle, chr, sizeof(chr));
+    char chr[25]; // max 25 characters must include '/0'
 
-    ftoa(((send_data_t *)data_struct)->spanning_na, &chr, 5);
-    UART_write(uart_handle,"\r\n spanning uit = ", 19);
-    UART_write(uart_handle, chr, sizeof(chr));
+    sprintf(chr, "stroom = %.3f\n",((send_data_t *)data_struct)->stroom);
+    uart_write_message(chr);
 
-    ftoa(((send_data_t *)data_struct)->spanning_voor, &chr, 5);
-    UART_write(uart_handle, "\r\n spanning in =", 17);
-    UART_write(uart_handle, chr, sizeof(chr));
+    sprintf(chr, "spanning uit = %.3f\n",((send_data_t *)data_struct)->spanning_na);
+    uart_write_message(chr);
 
-    //ftoa(((send_data_t *)data_struct)->temperatuur, &chr, 5);
-    sprintf(chr, "%.4f",((send_data_t *)data_struct)->temperatuur);
-    UART_write(uart_handle, "\r\n temp in =", 13);
-    UART_write(uart_handle, chr, sizeof(chr));
+    sprintf(chr, "spanning in = %.3f\n",((send_data_t *)data_struct)->spanning_voor);
+    uart_write_message(chr);
+
+    sprintf(chr, "temperatuur = %.3f\n",((send_data_t *)data_struct)->temperatuur);
+    uart_write_message(chr);
 
     float vermogen = ((send_data_t *)data_struct)->stroom;
     vermogen *= ((send_data_t *)data_struct)->spanning_na;
 
-    ftoa(vermogen, &chr, 5);
-    UART_write(uart_handle, "\r\n vermogen = ", 15);
-    UART_write(uart_handle, chr, sizeof(chr));
-
-//    ftoa(((send_data_t *)data_struct)->temperatuur, &chr, 5);
-//    UART_write(uart_handle, "\r\n temperatuur = ", 18);
-//    UART_write(uart_handle, chr, sizeof(chr));
+    sprintf(chr, "vermogen = %.3f\n",vermogen);
+    uart_write_message(chr);
 }
 
 void uart_get_next_velocity(void *p, void *arg2){

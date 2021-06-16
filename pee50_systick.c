@@ -12,7 +12,7 @@
 
 void systick_init(void)
 {
-    unsigned long micro = 16000L;                   // timer voor elke 200us/5000Hz
+    unsigned long micro = 80000L;                   // timer voor elke ms /1000Hz
     SysTickPeriodSet(micro);
     SysTickIntRegister(&scheduler_isr);
 }

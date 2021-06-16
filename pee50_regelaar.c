@@ -19,7 +19,6 @@
 #include "pee50_regelaar.h"
 #include "pee50_adc.h"
 
-
 #define ti  0.0012      // 14.7;
 #define td  0.000036     // 3.6;
 #define ts  0.0002       // 1ms
