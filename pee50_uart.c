@@ -33,6 +33,9 @@ static int houder = 0;
 
 int nummer = 0;
 
+const char* enum_names[] = {"reset", "wacht", "gereed", "start", "nood"};
+
+
 void uart_isr(UART_Handle handle, void *buf, size_t count)
 {
     // add status reset and status change when everything is received
@@ -66,12 +69,12 @@ void uart_isr(UART_Handle handle, void *buf, size_t count)
         if(*(char *)buf == 's') {
             status = start;
             system_status_change(&status, NULL);
-            uart_write_message("het systeem wordt gestart [druk op elke toets voor een reset]");
+            uart_write_message("het systeem wordt gestart [druk op elke toets voor een reset]\n");
         } else {
             uart_write_message("om te starten druk op s\n");
         }
     } else {
-        status = nood;
+        status = reset;
         system_status_change(&status, NULL);
         uart_write_message("\e[1;1H\e[2J");
     }
@@ -106,7 +109,7 @@ void uart_write_message(char *message)
     UART_write(uart_handle, message, strlen(message));
 }
 
-void uart_send_data(void *data_struct, void *temp1)
+void uart_send_data(void *data_struct, void *sys_stat)
 {
     uart_write_message("\e[1;1H\e[2J");
     char chr[25]; // max 25 characters must include '/0'
@@ -126,10 +129,16 @@ void uart_send_data(void *data_struct, void *temp1)
     sprintf(chr, "setpoint = %.3f\n",((send_data_t *)data_struct)->set_point);
     uart_write_message(chr);
 
+    sprintf(chr, "windsnelheid = %d\n",((send_data_t *)data_struct)->velocity);
+    uart_write_message(chr);
+
     float vermogen = ((send_data_t *)data_struct)->stroom;
     vermogen *= ((send_data_t *)data_struct)->spanning_na;
 
     sprintf(chr, "vermogen = %.3f\n",vermogen);
+    uart_write_message(chr);
+
+    sprintf(chr, "systeem status = %s", enum_names[*(sys_stat_t *)sys_stat]);
     uart_write_message(chr);
 }
 

@@ -14,11 +14,11 @@ void systick_init(void)
 {
     unsigned long micro = 80000L;                   // timer voor elke ms /1000Hz
     SysTickPeriodSet(micro);
-    SysTickIntRegister(&scheduler_isr);
 }
 
 void systick_start(void)
 {
+    SysTickIntRegister(&scheduler_isr);
     SysTickEnable();
     SysTickIntEnable();
 }

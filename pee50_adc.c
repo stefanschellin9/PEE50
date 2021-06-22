@@ -40,8 +40,9 @@ ADC_Handle   adc2;
 ADC_Params   params;
 //ADC_Params   params1;
 //ADC_Params   params2;
-#define max_waarde 4
-#define max_deling 1/max_waarde
+
+#define MAX_WAARDE 8
+#define MAX_DELING 1/MAX_WAARDE
 
 void adc_init()
 {
@@ -76,10 +77,20 @@ void adc_close()
 }
 
 void adc_meet_stroom (void *stroom) {
+
     uint16_t adcValue;
-    if(ADC_convert(adc0, &adcValue) == ADC_STATUS_SUCCESS) {
-        *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, adcValue)*0.00008205128205); //0.000001*58.5589777 //0.000001*82.05128205
+    int i = 0;
+    uint16_t som = 0;
+
+    while(i < MAX_WAARDE) {
+        if(ADC_convert(adc0, &adcValue) == ADC_STATUS_SUCCESS) {
+            som += adcValue*MAX_DELING;
+            i++;
+        }
     }
+
+    *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, som)*0.000120); //0.000001*58.5589777 //0.000001*82.05128205 //0.000001*144.2029894
+
 }
 
 void adc_meet_spanning_voor (void *spanning_voor) {

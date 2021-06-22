@@ -22,7 +22,7 @@
 #define ti  0.00012      // 14.7;
 #define td  0.00036     // 3.6;
 #define ts  0.0002       // 1ms
-#define kc  0.00005625        // 0.0005625
+#define kc  0.0005625        // 0.0005625
 
 PIDController PID;
 
@@ -33,7 +33,7 @@ PWM_Params pwmParams;
 float dutyValue;
 
 uint32_t dutyCycleMin = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 1) / 100);
-uint32_t dutyCycleMax = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 14) / 100);
+uint32_t dutyCycleMax = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 18) / 100);
 
 void regelaar_init()
 {
@@ -85,24 +85,15 @@ void regelaar_set(void *arg1, void *arg2)
     PID.Output = 0;
 }
 
-void regelaar_close(void)
-{
-    PID.previous_Error = PID.Error = 0;
-    PID.previous_Output_Measurement_2 = PID.previous_Output_Measurement = 0;
-    PID.previous_Output_Measurement = PID.Output_Measurement = 0;
-    PID.Output =  0;
-    PWM_stop(pwm);
-}
-float setpoint = 128; //*(float *)sp;
-
 void regelaar(void *sp, void *temp2)
 {
+    gpio_led_toggle();
     float current_Setpoint = 0;
-
+    float setpoint = *(float *)sp;
     float voltage, current;
     adc_meet_stroom(&current);
     adc_meet_spanning_na(&voltage);
-    if(voltage <2) {
+    if(voltage <0.1) {
         PID.Output_Measurement = 0;
         PID.Error = 0;
         current_Setpoint = 0;
@@ -128,7 +119,7 @@ void regelaar(void *sp, void *temp2)
     if (dutyValue >= dutyCycleMax)
     {
       dutyValue = dutyCycleMax;
-      PID.Output = 14;
+      PID.Output = 18;
 
     }
     else if(dutyValue <= dutyCycleMin)
@@ -143,6 +134,7 @@ void regelaar(void *sp, void *temp2)
     PID.previous_Error = PID.Error;
     PID.previous_Output_Measurement_2 = PID.previous_Output_Measurement;
     PID.previous_Output_Measurement = PID.Output_Measurement;
+    gpio_led_toggle();
 }
 
 

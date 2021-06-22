@@ -8,7 +8,9 @@
 #ifndef PEE50_TIMER_H_
 #define PEE50_TIMER_H_
 
-void timer_isr();
+#include <ti/drivers/Timer.h>
+
+void timer_isr(Timer_Handle handle, int_fast16_t status);
 
 void timer_init(int hertz);
 

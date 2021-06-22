@@ -59,11 +59,11 @@
 #define MAX_STROOM          40
 #define MAX_SPANNING_VOOR   35
 #define MAX_SPANNING_NA     40
-#define MAX_TEMPERATUUR     150
+#define MAX_TEMPERATUUR     35
 #define TEMP_FAN_ON         60
 
-sys_stat_t sys_status = reset;
-send_data_t data_struct = {0.0, 0.0, 0.0, 0.0, 0.0};
+sys_stat_t sys_status = wacht;
+send_data_t data_struct = {0.0, 0.0, 0.0, 0.0, 0.0, 0};
 
 
 
@@ -101,18 +101,22 @@ void check_overwaarde(void *arg1, void *arg2)
 
     adc_meet_stroom(&data_struct.stroom);
     if(data_struct.stroom > MAX_STROOM) {
+        uart_write_message("OVERSTROOM\n");
         system_status_change(&temp, NULL);
     }
     adc_meet_spanning_voor(&data_struct.spanning_voor);
     if(data_struct.spanning_voor > MAX_SPANNING_VOOR) {
+        uart_write_message("OVERSPANNING OP DE INGANG\n");
         system_status_change(&temp, NULL);
     }
     adc_meet_spanning_na(&data_struct.spanning_na);
     if(data_struct.spanning_na > MAX_SPANNING_NA) {
+        uart_write_message("OVERSPANNING OP DE UITGANG\n");
         system_status_change(&temp, NULL);
     }
     tmp117_read_temp_c(&data_struct.temperatuur);
     if(data_struct.temperatuur > MAX_TEMPERATUUR) {
+        uart_write_message("OVERVERHIT\n");
         system_status_change(&temp, NULL);
     }
 }
@@ -134,10 +138,17 @@ void fan_control(void *temp1, void *temp2)
 
 void check_stroom_nul(void *temp1, void *temp2)
 {
-    sys_stat_t temp = reset;
+    sys_stat_t temp = wacht;
+    char chr[25];
+
     float stroom;
     adc_meet_stroom(&stroom);
-    if(stroom < 1) {
+    sprintf(chr, "stroom = %.3f\n",stroom);
+    uart_write_message("\e[1;1H\e[2J");
+    uart_write_message("systeem staat in reset tot stroom lager is dan 5 ampere\n");
+    uart_write_message(chr);
+
+    if(stroom < 5) {
         system_status_change(&temp, NULL);
     }
 }
@@ -151,10 +162,17 @@ void switch_relay(void *arg1, void *arg2)
 
 
 
+float set_points[3] = {380.5, 415.5, 470.3};
+int index = 0;
+
 void next_setpoint(void *velocity, void *setpoint)
 {
-    uart_get_next_velocity(&velocity, NULL);
-    calc_setpoint(&velocity, &data_struct.set_point);     // calculate the next setpoint with
+    data_struct.set_point = set_points[index];
+    index++;
+    index %= 3;
+    uart_get_next_velocity(velocity, NULL);
+
+    //calc_setpoint(&velocity, &data_struct.set_point);     // calculate the next setpoint with
 }
 
 
@@ -173,21 +191,111 @@ int main(void)
     regelaar_init();            /* initialize regelaar */
     regelaar_open();            /* open regelaar at 1% pwm */
 
-
     gpio_init();                /* initialize gpio */
     gpio_schakelaar_on();       /* switch on relay */
 
-    systick_init();             /* initialize systick */
-    uart_init_callback();       /* initialize uart for callback mode */
+
+    //uart_init_callback();       /* initialize uart for callback mode */
     tmp117_init();              /* initialize tmp117 temperature sensor */
+
+
     adc_init();                 /* initialize adc */
-
     adc_open();
-    uart_open();
-
-    timer_init(5000);       // 5000Hz/200us interrupt voor regelaar
-
+    timer_init(5000);
     while(1) {
+        uart_init_callback();
+        uart_open();
+        systick_init();
+
+        regelaar_open();
+        //regelaar_open();
+        /*********************************************************************/
+        uart_write_message("\e[1;1H\e[2J");
+        uart_write_message("voer uw 8 windsnelheden in:\n");
+        while(sys_status == wacht) {
+            check_uart();
+        }
+
+        /*********************************************************************/
+        while(sys_status == gereed) {
+            gpio_schakelaar_on();
+            check_uart();
+        }
+
+        /*********************************************************************/
+        /* attach tasks to scheduler */
+        scheduler_task_attach(&next_setpoint, 15000, 0, &data_struct.velocity, &data_struct.set_point);     // om de 5 minuten
+        scheduler_task_attach(&check_overwaarde, 1000, 0, &data_struct);             // check voor overwaardes elke seconde
+        scheduler_task_attach(&uart_send_data, 1000, 0, &data_struct, &sys_status);               // send data every second
+
+        systick_start();
+        timer_start();
+        while(sys_status == start) {
+            scheduler_tasks_execute();
+            check_uart();
+        }
+        timer_stop();
+        systick_stop();
+        scheduler_task_detach_all();
+
+
+
+        /*********************************************************************/
+        //uart_write_message("\e[1;1H\e[2J");
+
+        data_struct.velocity = 0;
+        calc_setpoint(&data_struct.velocity, &data_struct.set_point);
+
+        scheduler_task_attach(&check_stroom_nul, 100, 0);
+        systick_start();
+        timer_start();
+        while(sys_status == reset) {
+            scheduler_tasks_execute();
+        }
+        timer_stop();
+        systick_stop();
+        scheduler_task_detach_all();
+
+
+        /*********************************************************************/
+        sys_stat_t temp1 = wacht;
+        scheduler_task_attach(&system_status_change, 25, 2000, &temp1);             // attach system_status_change change status after 25 ms
+        systick_start();
+        while(sys_status == nood) {
+            gpio_schakelaar_off();
+            scheduler_tasks_execute();
+        }
+        systick_stop();
+        scheduler_task_detach_all();
+
+        uart_close();
+    }
+        /*********************************************************************/
+//        sys_stat_t temp1 = wacht;
+//
+//        data_struct.velocity = 0;
+//        calc_setpoint(&data_struct.velocity, &data_struct.set_point);
+//
+//        scheduler_task_attach(&check_stroom_nul, 1, 0);                           // attach adc_meet_stroom check every ms
+//        scheduler_task_attach(&system_status_change, 10, 25, &temp1);             // attach system_status_change change status after 25 ms
+//        scheduler_task_attach(&switch_relay, 10, 20);                             // attach gpio_power_rail_switch change after 20 ms
+//
+//        systick_start();
+//        while(sys_status == nood) {
+//            scheduler_tasks_execute();
+//        }
+//        systick_stop();
+//        scheduler_task_detach_all();
+
+    //}
+    gpio_schakelaar_off();
+    uart_close();
+    regelaar_close();
+
+    return 0;
+}
+
+
 /* test uart_send */
 //        scheduler_task_attach(&uart_send_data, 100, 0, &data_struct); // 100 ms 0 ms delay
 //        systick_start();
@@ -235,73 +343,3 @@ int main(void)
 //        }
 //        systick_stop();
 //        scheduler_task_detach_all();
-
-
-
-        /*********************************************************************/
-        uart_write_message("voer uw 8 windsnelheden in:\n");
-        while(sys_status == wacht) {
-            check_uart();
-        }
-
-        /*********************************************************************/
-        while(sys_status == gereed) {
-            uart_write_message("het systeem is gereed\n");
-            check_uart();
-        }
-
-        /*********************************************************************/
-        /* attach tasks to scheduler */
-        scheduler_task_attach(&next_setpoint, 300000, 0, &velocity, &data_struct.set_point);     // om de 5 minuten
-        scheduler_task_attach(&check_overwaarde, 1000, 0, &data_struct);             // check voor overwaardes elke seconde
-        scheduler_task_attach(&uart_send_data, 1000, 0, &data_struct);               // send data every second
-
-        timer_start();
-        systick_start();
-        while(sys_status == start) {
-            scheduler_tasks_execute();
-            check_uart();
-        }
-        systick_stop();
-        scheduler_task_detach_all();
-
-        /*********************************************************************/
-        uart_write_message("\e[1;1H\e[2J");
-        uart_write_message("systeem wordt gereset\n");
-        uart_write_message("wachten tot stroom laag is\n");
-
-        data_struct.velocity = 0;
-        calc_setpoint(&data_struct.velocity, &data_struct.set_point);
-
-        while(sys_status == reset) {
-            adc_meet_stroom(&data_struct.stroom);
-            if(data_struct.stroom < 4) {                 // is de stroom ooit lager dan 4 ?? TODO
-                sys_status = wacht;
-                uart_write_message("\e[1;1H\e[2J");
-            }
-        }
-        timer_stop();
-
-        /*********************************************************************/
-        sys_stat_t temp1 = wacht;
-
-        data_struct.velocity = 0;
-        calc_setpoint(&data_struct.velocity, &data_struct.set_point);
-
-        scheduler_task_attach(&check_stroom_nul, 1, 0);                           // attach adc_meet_stroom check every ms
-        scheduler_task_attach(&system_status_change, 10, 25, &temp1);             // attach system_status_change change status after 25 ms
-        scheduler_task_attach(&switch_relay, 10, 20);                             // attach gpio_power_rail_switch change after 20 ms
-
-        systick_start();
-        while(sys_status == nood) {
-            scheduler_tasks_execute();
-        }
-        systick_stop();
-        scheduler_task_detach_all();
-    }
-    gpio_schakelaar_off();
-    uart_close();
-    //regelaar_close();
-
-    return 0;
-}
