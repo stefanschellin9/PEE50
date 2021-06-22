@@ -39,7 +39,7 @@ void uart_isr(UART_Handle handle, void *buf, size_t count)
     sys_stat_t status;
     system_status_get(&status, NULL);
 
-    if(status == reset) {
+    if(status == wacht) {
         if(*(char *)buf == '\b') {
             char *bs_dl = "\b \b";
             UART_write(handle, bs_dl, sizeof(bs_dl));
@@ -59,7 +59,7 @@ void uart_isr(UART_Handle handle, void *buf, size_t count)
         if(houder >= MAX_BUFF_SIZE) {
             sys_stat_t temp = gereed;
             system_status_change(&temp, NULL);
-            uart_write_message("data is opgeslagen\n");
+            uart_write_message("data is opgeslagen [om te starten druk op s]\n");
             houder = 0;
         }
     } else if(status == gereed) {
