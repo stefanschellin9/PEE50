@@ -101,21 +101,25 @@ void check_overwaarde(void *arg1, void *arg2)
 
     adc_meet_stroom(&data_struct.stroom);
     if(data_struct.stroom > MAX_STROOM) {
+        uart_write_message("\e[1;1H\e[2J");
         uart_write_message("OVERSTROOM\n");
         system_status_change(&temp, NULL);
     }
     adc_meet_spanning_voor(&data_struct.spanning_voor);
     if(data_struct.spanning_voor > MAX_SPANNING_VOOR) {
+        uart_write_message("\e[1;1H\e[2J");
         uart_write_message("OVERSPANNING OP DE INGANG\n");
         system_status_change(&temp, NULL);
     }
     adc_meet_spanning_na(&data_struct.spanning_na);
     if(data_struct.spanning_na > MAX_SPANNING_NA) {
+        uart_write_message("\e[1;1H\e[2J");
         uart_write_message("OVERSPANNING OP DE UITGANG\n");
         system_status_change(&temp, NULL);
     }
     tmp117_read_temp_c(&data_struct.temperatuur);
     if(data_struct.temperatuur > MAX_TEMPERATUUR) {
+        uart_write_message("\e[1;1H\e[2J");
         uart_write_message("OVERVERHIT\n");
         system_status_change(&temp, NULL);
     }
@@ -145,10 +149,10 @@ void check_stroom_nul(void *temp1, void *temp2)
     adc_meet_stroom(&stroom);
     sprintf(chr, "stroom = %.3f\n",stroom);
     uart_write_message("\e[1;1H\e[2J");
-    uart_write_message("systeem staat in reset tot stroom lager is dan 5 ampere\n");
+    uart_write_message("systeem staat in reset tot stroom lager is dan 13 ampere\n");
     uart_write_message(chr);
 
-    if(stroom < 5) {
+    if(stroom < 13) {
         system_status_change(&temp, NULL);
     }
 }
@@ -212,13 +216,13 @@ int main(void)
         /*********************************************************************/
         uart_write_message("\e[1;1H\e[2J");
         uart_write_message("voer uw 8 windsnelheden in:\n");
+        gpio_schakelaar_on();
         while(sys_status == wacht) {
             check_uart();
         }
 
         /*********************************************************************/
         while(sys_status == gereed) {
-            gpio_schakelaar_on();
             check_uart();
         }
 
@@ -258,12 +262,12 @@ int main(void)
 
 
         /*********************************************************************/
-        sys_stat_t temp1 = wacht;
-        scheduler_task_attach(&system_status_change, 25, 2000, &temp1);             // attach system_status_change change status after 25 ms
+        //sys_stat_t temp1 = wacht;
+        //scheduler_task_attach(&system_status_change, 25, 2000, &temp1);             // attach system_status_change change status after 25 ms
         systick_start();
         while(sys_status == nood) {
             gpio_schakelaar_off();
-            scheduler_tasks_execute();
+            check_uart();
         }
         systick_stop();
         scheduler_task_detach_all();

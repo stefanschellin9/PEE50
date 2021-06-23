@@ -73,6 +73,13 @@ void uart_isr(UART_Handle handle, void *buf, size_t count)
         } else {
             uart_write_message("om te starten druk op s\n");
         }
+    } else if(status == nood) {
+        if(*(char *)buf == 'r') {
+            status = wacht;
+            system_status_change(&status, NULL);
+        } else {
+            uart_write_message("om te resetten druk op r\n");
+        }
     } else {
         status = reset;
         system_status_change(&status, NULL);

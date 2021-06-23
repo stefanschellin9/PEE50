@@ -41,7 +41,7 @@ ADC_Params   params;
 //ADC_Params   params1;
 //ADC_Params   params2;
 
-#define MAX_WAARDE 8
+#define MAX_WAARDE 6
 #define MAX_DELING 1/MAX_WAARDE
 
 void adc_init()
@@ -89,7 +89,7 @@ void adc_meet_stroom (void *stroom) {
         }
     }
 
-    *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, som)*0.000120); //0.000001*58.5589777 //0.000001*82.05128205 //0.000001*144.2029894
+    *(float *)stroom = (ADC_convertRawToMicroVolts(adc0, som)*0.000085); //0.000001*58.5589777 //0.000001*82.05128205 //0.000001*144.2029894
 
 }
 
